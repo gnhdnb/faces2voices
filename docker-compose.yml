@@ -1,0 +1,21 @@
+version: '3'
+services:
+    frontend_public:
+        build:
+            context: .
+            dockerfile: ./dockerfiles/Dockerfile.Node
+            args:
+                APP_LOCATION: "./services/frontend"
+        container_name: frontend_public
+        restart: unless-stopped
+        env_file: .env
+        environment:
+            - ORIGIN_URL=$ORIGIN_URL
+            - REPOSITORY_NAME=$REPOSITORY_NAME
+            - PRODUCTION=$PRODUCTION
+            - API_URL=$API_URL
+        volumes:
+            - ./services/frontend/src:/home/node/app/src
+        ports:
+            - "3000:3000"
+    

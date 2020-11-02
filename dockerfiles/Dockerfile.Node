@@ -1,0 +1,15 @@
+FROM node:10-alpine
+
+ARG APP_LOCATION
+
+RUN mkdir -p /home/node/app/node_modules && mkdir -p /home/node/app/src && chown -R node:node /home/node/app
+
+WORKDIR /home/node/app
+
+COPY ${APP_LOCATION}/package*.json ./
+
+RUN npm install
+
+COPY ${APP_LOCATION}/ .
+
+CMD sh -c 'if [ "$PRODUCTION" = true ]; then echo "Service started in production! " && npm run build; else echo "Service started in development! " && npm run dev ; fi'
