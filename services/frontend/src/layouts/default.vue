@@ -1,19 +1,19 @@
 <template>
   <div>
-    <!--<Modal/>-->
     Default template
-    <Nuxt/>
+    <Nuxt />
+    <Modal />
   </div>
 </template>
 <script>
 import Modal from '@/components/Modal'
-import { mapMutations } from 'vuex'
+
 export default {
   components: {
     Modal,
   },
 }
 </script>
-<style lang='scss'>
-@import '@/assets/styles/layout/default.scss';
+<style lang="scss">
+@import '@/assets/styles/layouts/default.scss';
 </style>
