@@ -16,7 +16,7 @@ services:
             - API_URL=$API_URL
         volumes:
             - ./services/frontend/src:/home/node/app/src
-            - ./docs:/home/node/app/src/dist
+            - ./docs:/home/node/app/dist
         ports:
             - "3000:3000"
     
