@@ -16,7 +16,7 @@
   text-align: center;
   display: block;
 }
-#description{
+.description{
   max-width: 609px;
   width: 100%;
   font-family:'Verdana-Regular';
@@ -27,7 +27,7 @@
 }
 
 #privacy_statement{
-  font-family: Verdana;
+  font-family: 'Verdana-Regular';
   font-style: normal;
   font-weight: normal;
   font-size: 14px;
@@ -40,4 +40,19 @@
     font-style: italic;
     font-weight: bold;
   }
+}
+#authors{
+  font-family: 'Verdana-Regular';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 22px;
+}
+.links{
+  color: #121212;
+}
+#developer{
+  font-family: 'Verdana-Italic';
+  font-size: 14px;
+line-height: 17px;
 }

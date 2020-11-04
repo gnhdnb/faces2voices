@@ -40,7 +40,6 @@ export default {
     const context = this
 
     this.audio = new Audio(context.source)
-    console.dir(context.audio)
 
     context.audio.addEventListener(
       'loadeddata',

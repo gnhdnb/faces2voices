@@ -1,38 +1,40 @@
-export const actions = {
-  saveDefaultValueInLocalStorage({ state, dispatch }, payload) {
-    localStorage.removeItem(payload.id)
-    dispatch('saveValueInLocalStorage', payload)
-  },
-  saveValueInLocalStorage({ state }, { id, payload }) {
+export const mutations = {
+  SET_VALUE_TO_LOCALSTORAGE(state, { id, payload }) {
     const parsed = JSON.stringify(payload)
     localStorage.setItem(id, parsed)
   },
+  SET_LOADER_PROPS(state, { id, propID, value }) {
+    if (!state.loaders[id]) {
+      state.loaders[id] = {
+        status: 'loading',
+        message: 'loading',
+        hidden: true,
+      }
+    }
+    state.loaders[id][propID] = value
+  },
 }
-
-export const mutations = {
-  CLOSE_MODAL(state) {
-    state.modal = {
-      size: 'small',
-      show: false,
-      message: 'Modal',
+export const getters = {
+  GET_VALUE_FROM_LOCALSTORAGE: () => {
+    return (id) => {
+      return localStorage.getItem(id)
+        ? JSON.parse(localStorage.getItem(id))
+        : null
     }
   },
-  SHOW_MODAL(state, { size, message, justifyContent, alignItems }) {
-    state.modal = {
-      show: true,
-      size: size || 'small',
-      justifyContent: justifyContent || 'center',
-      alignItems: alignItems || 'center',
-      message: message || 'Modal',
+  GET_LOADER_BY_ID: (state) => {
+    return (id) => {
+      return state.loaders[id] ? state.loaders[id] : state.loaders.default
     }
   },
 }
 
 export const state = () => ({
-  defaultURL: '',
-  modal: {
-    show: false,
-    size: 'small',
-    message: '',
+  loaders: {
+    default: {
+      status: 'loading',
+      message: 'loading',
+      hidden: false,
+    },
   },
 })
