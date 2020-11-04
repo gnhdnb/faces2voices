@@ -1,15 +1,15 @@
 @font-face {
-    font-family: 'Verdana-Regular';
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src: url('~assets/fonts/Verdana.ttf') format('truetype');
-  }
-  
-  @font-face {
-    font-family: 'Verdana-Bold';
-    font-style: normal;
-    font-weight: 700;
-    font-display: swap;
-    src: url('~assets/fonts/Verdana.ttf') format('truetype');
-  }
+  font-family: 'Verdana-Regular';
+  font-display: swap;
+  src: url("/fonts/Verdana-Regular.ttf") format('truetype');
+}
+@font-face {
+  font-family: 'Verdana-Italic';
+  font-display: swap;
+  src: url("/fonts/Verdana-Italic.ttf") format('truetype');
+}
+@font-face {
+  font-family: 'Verdana-Bold';
+  font-display: swap;
+  src: url("/fonts/Verdana-Bold.ttf") format('truetype');
+}

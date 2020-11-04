@@ -1,0 +1,33 @@
+.uploader{
+  &__wrapper{
+      max-width: 750px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+  }
+}
+.fileUploader{
+  &__wrapper{
+    display: flex;
+    align-items: center;
+    border: 1px solid #121212;
+    border-radius: 27px;
+    height: 54px;
+    max-width: 361px;
+    width: 100%;
+    padding: 0 31px;
+    box-sizing: border-box;
+    font-family: 'Verdana-Regular';
+    font-weight: bold;
+    .upload{
+        margin-left: 31px;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-left: 1px solid #121212;
+    }
+  }
+}

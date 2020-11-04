@@ -15,6 +15,7 @@ export default {
     '@nuxtjs/axios',
     '@nuxtjs/pwa',
     '@nuxtjs/style-resources',
+    '@nuxtjs/svg-sprite',
   ],
   server: {
     port: 3000,
@@ -24,5 +25,9 @@ export default {
   axios,
   pwa,
   styleResources,
+  svgSprite: {
+    input: '~/assets/svg',
+    output: '~/static/icons/'
+  },
 }
   

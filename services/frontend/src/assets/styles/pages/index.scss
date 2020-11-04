@@ -1,0 +1,45 @@
+.page{
+  &__wrapper{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  } 
+}
+.title{
+  font-size: 48px; 
+  line-height: 58px;
+  font-family: 'Verdana-Bold-Italic';
+  color: none;
+  -webkit-text-fill-color: white; /* Will override color (regardless of order) */
+  -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: #121212;
+  text-align: center;
+  display: block;
+}
+#description{
+  max-width: 609px;
+  width: 100%;
+  font-family:'Verdana-Regular';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 17px;
+  text-align: center;
+  color: black;
+}
+
+#privacy_statement{
+  font-family: Verdana;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 17px;
+  text-align: center;
+  color: black;
+  max-width: 609px;
+  width: 100%;
+  .bold{
+    font-style: italic;
+    font-weight: bold;
+  }
+}
