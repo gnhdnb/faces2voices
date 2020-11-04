@@ -6,6 +6,24 @@
       flex-direction: column;
       align-items: center;
   }
+  &__preview{
+    background: #121212;
+    max-width: 750px;
+    width: 100%;
+    position: relative;
+    .alert{
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);;
+    }
+    .image{
+      display: block;
+      object-fit: contain;
+      width: 100%;
+      height: 100%;
+    }
+  }
 }
 .fileUploader{
   &__wrapper{
@@ -18,8 +36,9 @@
     width: 100%;
     padding: 0 31px;
     box-sizing: border-box;
-    font-family: 'Verdana-Regular';
-    font-weight: bold;
+    font-family: 'Verdana-Bold';
+    font-size: 18px;
+    line-height: 22px;
     .upload{
         margin-left: 31px;
         height: 100%;
