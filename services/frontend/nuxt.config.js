@@ -25,6 +25,9 @@ export default {
   axios,
   pwa,
   styleResources,
+  router: {
+    base: '/faces2voices/'
+  },
   svgSprite: {
     input: '~/assets/svg',
     output: '~/static/icons/'
