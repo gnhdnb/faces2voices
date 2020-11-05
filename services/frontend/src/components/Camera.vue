@@ -8,7 +8,6 @@
       <svg-icon style="height: 40px; width: 40px" name="camera" />
     </div>
     <loader :id="`camera`" />
-    <div @click="sendDescriptors">send</div>
   </div>
 </template>
 <style lang="scss">
@@ -36,22 +35,75 @@ export default {
   methods: {
     ...mapMutations({
       setLoaderProps: 'SET_LOADER_PROPS',
+      setValue: 'SET_VALUE_TO_LOCALSTORAGE',
+      isParticipant: 'SET_PARTICIPANT_VALUE',
     }),
     sendDescriptors() {
       const context = this
+      console.log(context.getValue('uuid'))
+      console.log('Request')
       const payload = {
         Id: context.getValue('uuid'),
         Descriptor: JSON.stringify(context.descriptors[0]),
       }
-      console.log(payload)
+
       context.$axios
         .post('/contribute', payload, { withCredentials: false })
         .then((response) => {
-          console.log('test')
-          console.log(response)
+          if (response.status === 202) {
+            return setTimeout(context.sendDescriptors, 5000)
+          } else {
+            try {
+              console.log(response.data)
+              context.setValue({
+                id: 'imgURI',
+                payload: response.data.spectrogramUri,
+              })
+              context.setValue({
+                id: 'voiceURI',
+                payload: response.data.voiceUri,
+              })
+              context.isParticipant(true)
+              context.setValue({
+                id: 'participant',
+                payload: true,
+              })
+            } catch (e) {
+              context.setLoaderProps({
+                id: 'camera',
+                propID: 'status',
+                value: 'error',
+              })
+              context.setLoaderProps({
+                id: 'camera',
+                propID: 'message',
+                value: 'System error. Check console',
+              })
+              context.setLoaderProps({
+                id: 'camera',
+                propID: 'hidden',
+                value: false,
+              })
+            }
+          }
         })
-        .catch(() => {
-          console.log('error')
+        .catch((e) => {
+          console.log(e)
+          context.setLoaderProps({
+            id: 'camera',
+            propID: 'status',
+            value: 'error',
+          })
+          context.setLoaderProps({
+            id: 'camera',
+            propID: 'message',
+            value: 'System error. Check console',
+          })
+          context.setLoaderProps({
+            id: 'camera',
+            propID: 'hidden',
+            value: false,
+          })
         })
     },
     turnOnCamera() {
@@ -216,7 +268,7 @@ export default {
             .withFaceLandmarks()
             .withFaceDescriptor()
           if (detection) {
-            if (context.descriptors.length < 1) {
+            if (context.descriptors.length < 3) {
               if (!context.dates.length) {
                 context.dates.push(Date.now())
               }
@@ -225,7 +277,23 @@ export default {
                 context.descriptors.push(detection.descriptor)
               }
             } else {
-              // context.sendDescriptors()
+              context.setLoaderProps({
+                id: 'camera',
+                propID: 'status',
+                value: 'loading',
+              })
+              context.setLoaderProps({
+                id: 'camera',
+                propID: 'message',
+                value: 'Sending request',
+              })
+              context.setLoaderProps({
+                id: 'camera',
+                propID: 'hidden',
+                value: false,
+              })
+              context.sendDescriptors()
+              return clearInterval(context.currentInterval)
             }
 
             const resizedDetection = faceapi.resizeResults(
@@ -241,7 +309,6 @@ export default {
           }
         } catch (e) {
           console.log(e)
-          clearInterval(context.currentInterval)
           context.setLoaderProps({
             id: 'camera',
             propID: 'status',
@@ -250,13 +317,14 @@ export default {
           context.setLoaderProps({
             id: 'camera',
             propID: 'message',
-            value: 'System error. For more info check console',
+            value: 'System error. Check console',
           })
           context.setLoaderProps({
             id: 'camera',
             propID: 'hidden',
             value: false,
           })
+          return clearInterval(context.currentInterval)
         }
       }, 250)
     },

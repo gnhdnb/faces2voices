@@ -1,6 +1,6 @@
 <script>
 import { v4 as uuidv4, validate as uuidValidate } from 'uuid'
-import { mapMutations, mapGetters } from 'vuex'
+import { mapState, mapMutations, mapGetters } from 'vuex'
 export default {
   data() {
     return {
@@ -10,6 +10,9 @@ export default {
   computed: {
     ...mapGetters({
       getValue: 'GET_VALUE_FROM_LOCALSTORAGE',
+    }),
+    ...mapState({
+      participant: (state) => state.participant,
     }),
   },
   mounted() {
@@ -23,10 +26,20 @@ export default {
       this.setValue({ id: 'uuid', payload: newUUID })
       this.uuid = newUUID
     }
+
+    const participant = this.getValue('participant')
+    // validation
+    if (participant) {
+      this.isParticipant(true)
+    } else {
+      this.isParticipant(false)
+      this.setValue({ id: 'participant', payload: false })
+    }
   },
   methods: {
     ...mapMutations({
       setValue: 'SET_VALUE_TO_LOCALSTORAGE',
+      isParticipant: 'SET_PARTICIPANT_VALUE',
     }),
   },
 }
@@ -37,6 +50,7 @@ export default {
     <player
       class="mb-20"
       :source="`https://faces2voices.blob.core.windows.net/imagesandspecs/4518b8f3-f7bd-439b-99a1-40dc3b7a2ad9.wav`"
+      :disabled="true"
     >
       <div style="position: relative">
         Live<span
@@ -66,7 +80,8 @@ export default {
       imaginary voices of online visitors. The composition is evolving in time
       depending on the contributions of people involved.
     </p>
-    <camera class="mb-20" />
+    <camera v-if="!participant" class="mb-20" />
+    <participant v-else class="mb-20" />
     <p id="privacy_statement" class="mb-30">
       <span class="bold">Privacy statement</span><br />
       We are implementing a responsible data policy. The project doesn't store

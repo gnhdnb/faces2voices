@@ -1,0 +1,15 @@
+.participant{
+  &__wrapper{
+    max-width: 750px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+  }
+  &__spectrogram{
+    width: 100%;
+    max-width: 100%;
+    display: block;
+    border: 0;
+  }
+}

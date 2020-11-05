@@ -13,6 +13,9 @@ export const mutations = {
     }
     state.loaders[id][propID] = value
   },
+  SET_PARTICIPANT_VALUE(state, payload) {
+    state.participant = payload
+  },
 }
 export const getters = {
   GET_VALUE_FROM_LOCALSTORAGE: () => {
@@ -30,6 +33,7 @@ export const getters = {
 }
 
 export const state = () => ({
+  participant: false,
   loaders: {
     default: {
       status: 'loading',

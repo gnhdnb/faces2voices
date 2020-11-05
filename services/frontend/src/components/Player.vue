@@ -1,6 +1,10 @@
 <template>
   <div ref="player" class="player__wrapper">
-    <div class="player__controls" @click="toggle">
+    <div
+      class="player__controls"
+      :style="{ cursor: disabled ? 'not-allowed' : 'pointer' }"
+      @click="toggle"
+    >
       <svg-icon
         style="height: 18px; width: 20px"
         :name="play ? 'pause' : 'play'"
@@ -29,6 +33,10 @@ export default {
       type: String,
       default: '',
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -55,7 +63,10 @@ export default {
       'click',
       (e) => {
         const sliderWidth = window.getComputedStyle(volumeSlider).width
-        const newVolume = e.offsetX / parseInt(sliderWidth)
+        let newVolume = e.offsetX / parseInt(sliderWidth)
+        if (newVolume > 1) {
+          newVolume = 1
+        }
         context.audio.volume = newVolume
         this.$refs.volumePercentage.style.width = newVolume * 100 + '%'
         if (newVolume) {
@@ -68,6 +79,9 @@ export default {
   },
   methods: {
     toggle() {
+      if (this.disabled) {
+        return false
+      }
       this.play = !this.play
       this.play ? this.audio.play() : this.audio.pause()
     },
