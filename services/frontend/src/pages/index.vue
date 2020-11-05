@@ -36,7 +36,7 @@ export default {
     <p class="title mt-40 mb-20">Faces2Voices</p>
     <player
       class="mb-20"
-      :source="`https://ia800905.us.archive.org/19/items/FREE_background_music_dhalius/backsound.mp3`"
+      :source="`https://faces2voices.blob.core.windows.net/imagesandspecs/4518b8f3-f7bd-439b-99a1-40dc3b7a2ad9.wav`"
     >
       <div style="position: relative">
         Live<span
@@ -85,7 +85,7 @@ export default {
     </p>
     <p id="developer" class="mb-10">
       designed by
-      <a class="links" href="https://morozovspace.github.io"
+      <a class="links" href="https://reverse-studio.web.app/faces2voices"
         ><u>Nikita Morozov</u></a
       >
     </p>

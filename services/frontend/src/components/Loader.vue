@@ -8,7 +8,7 @@
       <svg-icon
         v-else-if="loader.status === 'error'"
         class="rotated45 error"
-        name="dark/cross"
+        name="cross"
       />
     </div>
     <span class="loader__msg">{{ loader.message }}</span>

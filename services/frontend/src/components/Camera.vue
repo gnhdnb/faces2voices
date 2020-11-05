@@ -1,17 +1,14 @@
 <template>
   <div class="camera__wrapper">
     <div v-if="cameraStatus" ref="cameraWrapper" class="camera__video">
-      <canvas class="camera__canvas" ref="canvas"></canvas>
+      <canvas ref="canvas" class="camera__canvas"></canvas>
       <div ref="canvasWrapper" class="camera__canvas"></div>
     </div>
-    <div v-else class="camera__icon">
-      <svg-icon
-        style="height: 40px; width: 40px"
-        name="camera"
-        @click="turnOnCamera"
-      />
+    <div v-else class="camera__button" @click="turnOnCamera">
+      <svg-icon style="height: 40px; width: 40px" name="camera" />
     </div>
     <loader :id="`camera`" />
+    <div @click="sendDescriptors">send</div>
   </div>
 </template>
 <style lang="scss">
@@ -19,12 +16,19 @@
 </style>
 <script>
 import * as faceapi from 'face-api.js'
-import { mapMutations } from 'vuex'
+import { mapMutations, mapGetters } from 'vuex'
 export default {
   data() {
     return {
       cameraStatus: false,
+      dates: [],
+      descriptors: [],
     }
+  },
+  computed: {
+    ...mapGetters({
+      getValue: 'GET_VALUE_FROM_LOCALSTORAGE',
+    }),
   },
   created() {
     this.setLoaderProps({ id: 'camera', propID: 'hidden', value: true })
@@ -33,6 +37,23 @@ export default {
     ...mapMutations({
       setLoaderProps: 'SET_LOADER_PROPS',
     }),
+    sendDescriptors() {
+      const context = this
+      const payload = {
+        Id: context.getValue('uuid'),
+        Descriptor: JSON.stringify(context.descriptors[0]),
+      }
+      console.log(payload)
+      context.$axios
+        .post('/contribute', payload, { withCredentials: false })
+        .then((response) => {
+          console.log('test')
+          console.log(response)
+        })
+        .catch(() => {
+          console.log('error')
+        })
+    },
     turnOnCamera() {
       const context = this
       return new Promise((resolve, reject) => {
@@ -64,7 +85,6 @@ export default {
               context
                 .startFaceAPI()
                 .then(() => {
-                  // Скрыть Loader и запустить вдиеоролик
                   context.video = document.createElement('video')
                   try {
                     context.video.srcObject = stream
@@ -167,7 +187,6 @@ export default {
         width: context.video.width,
         height: context.video.height,
       }
-      console.log(displaySize)
 
       this.$refs.canvasWrapper.append(canvas)
       faceapi.matchDimensions(canvas, displaySize)
@@ -195,9 +214,20 @@ export default {
               new faceapi.TinyFaceDetectorOptions({ inputSize })
             )
             .withFaceLandmarks()
-            .withFaceExpressions()
-
+            .withFaceDescriptor()
           if (detection) {
+            if (context.descriptors.length < 1) {
+              if (!context.dates.length) {
+                context.dates.push(Date.now())
+              }
+
+              if (Date.now() - context.dates[context.dates.length - 1] > 500) {
+                context.descriptors.push(detection.descriptor)
+              }
+            } else {
+              // context.sendDescriptors()
+            }
+
             const resizedDetection = faceapi.resizeResults(
               detection,
               displaySize
@@ -208,8 +238,6 @@ export default {
               .clearRect(0, 0, context.video.width, context.video.height)
 
             faceapi.draw.drawFaceLandmarks(canvas, resizedDetection)
-          } else {
-            // Что делать если нет лица?
           }
         } catch (e) {
           console.log(e)
@@ -230,7 +258,7 @@ export default {
             value: false,
           })
         }
-      }, 200)
+      }, 250)
     },
   },
 }
