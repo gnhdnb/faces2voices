@@ -1,0 +1,1 @@
+__NUXT_JSONP__("/", {data:[{}],fetch:[],mutations:[["SET_LOADER_PROPS",{id:"camera",propID:"hidden",value:true}]]});

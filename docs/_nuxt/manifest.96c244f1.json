@@ -1,0 +1,10 @@
+{
+  "name": "faces2voices",
+  "short_name": "faces2voices",
+  "icons": [],
+  "start_url": "/?standalone=true",
+  "display": "fullscreen",
+  "background_color": "#ffffff",
+  "theme_color": "black",
+  "lang": "en"
+}
