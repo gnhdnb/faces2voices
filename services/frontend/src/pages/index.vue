@@ -46,7 +46,7 @@ export default {
 </script>
 <template>
   <div class="page__wrapper">
-    <p class="title mt-40 mb-20">Faces2Voices</p>
+    <p class="title mt-20 mb-10">Faces2Voices</p>
     <player
       class="mb-20"
       :source="`https://faces2voices.blob.core.windows.net/imagesandspecs/4518b8f3-f7bd-439b-99a1-40dc3b7a2ad9.wav`"
@@ -68,21 +68,21 @@ export default {
         ></span>
       </div>
     </player>
-    <p class="description mb-30">
+    <p class="description mb-10">
       Faces2Voices is an online interactive installation which uses facial
       recognition technology to create a generative music composition based on
       imaginary voices of online visitors. The composition is evolving in time
       depending on the contributions of people involved.
     </p>
-    <p class="description mb-40">
+    <p class="description mb-20">
       Faces2Voices is an online interactive installation which uses facial
       recognition technology to create a generative music composition based on
       imaginary voices of online visitors. The composition is evolving in time
       depending on the contributions of people involved.
     </p>
-    <camera v-if="!participant" class="mb-20" />
-    <participant v-else class="mb-20" />
-    <p id="privacy_statement" class="mb-30">
+    <camera v-if="!participant" class="mb-10" />
+    <participant v-else class="mb-10" />
+    <p id="privacy_statement" class="mb-20">
       <span class="bold">Privacy statement</span><br />
       We are implementing a responsible data policy. The project doesn't store
       or share personal data of participants, but only save and use fictional

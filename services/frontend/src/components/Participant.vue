@@ -33,22 +33,8 @@ export default {
       class="participant__spectrogram mb-10"
       :src="imgURI"
     />
-    <player v-if="voiceURI && voiceURI.length" class="mb-20" :source="voiceURI">
-      <div style="position: relative">
-        Your voice<span
-          style="
-            display: block;
-            height: 10px;
-            width: 10px;
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            border-radius: 50%;
-            background: #f21e2b;
-            animation: glowing 1s infinite;
-          "
-        ></span>
-      </div>
+    <player v-if="voiceURI && voiceURI.length" :source="voiceURI">
+      <div style="position: relative">Your voice</div>
     </player>
   </div>
 </template>

@@ -3,10 +3,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 0 20px;
   } 
 }
 .title{
-  font-size: 48px; 
   line-height: 58px;
   font-family: 'Verdana-Bold-Italic';
   color: none;
@@ -15,22 +15,23 @@
   -webkit-text-stroke-color: #121212;
   text-align: center;
   display: block;
+  @include adaptiv-font(48, 24);
 }
 .description{
   max-width: 609px;
   width: 100%;
   font-family:'Verdana-Regular';
-  font-size: 14px;
   line-height: 17px;
   text-align: center;
   color: black;
+  @include adaptiv-font(14, 10);
 }
 
 #privacy_statement{
   font-family: 'Verdana-Regular';
   font-style: normal;
   font-weight: normal;
-  font-size: 14px;
+  @include adaptiv-font(14, 10);
   line-height: 17px;
   text-align: center;
   color: black;
@@ -45,14 +46,14 @@
   font-family: 'Verdana-Regular';
   font-style: normal;
   font-weight: normal;
-  font-size: 16px;
   line-height: 22px;
+  @include adaptiv-font(16, 12);
 }
 .links{
   color: #121212;
 }
 #developer{
   font-family: 'Verdana-Italic';
-  font-size: 14px;
-line-height: 17px;
+  @include adaptiv-font(14, 10);
+  line-height: 17px;
 }

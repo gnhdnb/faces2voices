@@ -40,8 +40,6 @@ export default {
     }),
     sendDescriptors() {
       const context = this
-      console.log(context.getValue('uuid'))
-      console.log('Request')
       const payload = {
         Id: context.getValue('uuid'),
         Descriptor: JSON.stringify(context.descriptors[0]),
@@ -54,7 +52,6 @@ export default {
             return setTimeout(context.sendDescriptors, 5000)
           } else {
             try {
-              console.log(response.data)
               context.setValue({
                 id: 'imgURI',
                 payload: response.data.spectrogramUri,
@@ -67,6 +64,11 @@ export default {
               context.setValue({
                 id: 'participant',
                 payload: true,
+              })
+              context.stream.getTracks().forEach(function (track) {
+                if (track.readyState === 'live') {
+                  track.stop()
+                }
               })
             } catch (e) {
               context.setLoaderProps({
@@ -128,6 +130,7 @@ export default {
           navigator.mediaDevices
             .getUserMedia({ audio: false, video: true })
             .then((stream) => {
+              context.stream = stream
               context.setLoaderProps({
                 id: 'camera',
                 propID: 'message',
@@ -277,6 +280,7 @@ export default {
                 context.descriptors.push(detection.descriptor)
               }
             } else {
+              /*
               context.setLoaderProps({
                 id: 'camera',
                 propID: 'status',
@@ -292,6 +296,7 @@ export default {
                 propID: 'hidden',
                 value: false,
               })
+              */
               context.sendDescriptors()
               return clearInterval(context.currentInterval)
             }

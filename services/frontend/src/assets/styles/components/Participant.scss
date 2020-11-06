@@ -1,6 +1,6 @@
 .participant{
   &__wrapper{
-    max-width: 750px;
+    max-width: 623px;
     width: 100%;
     display: flex;
     align-items: center;
@@ -11,5 +11,6 @@
     max-width: 100%;
     display: block;
     border: 0;
+    border-radius: 17px;
   }
 }
