@@ -116,49 +116,57 @@ export default {
       if (context.disabled) {
         return false
       }
-      if (context.first) {
-        context.crossFade = new Tone.CrossFade().toDestination()
-        context.players.push({ instance: new Tone.Player() })
-        context.players.push({ instance: new Tone.Player() })
-        context.crossFade.fade.value = 0.5
-        context.players[0].instance.mute = context.muted
-        context.players[1].instance.mute = context.muted
-        context.players[0].instance.connect(context.crossFade.a)
-        context.players[1].instance.connect(context.crossFade.b)
+      Tone.context.resume().then(() => {
+        if (context.first) {
+          context.crossFade = new Tone.CrossFade().toDestination()
+          context.players.push({ instance: new Tone.Player() })
+          context.players.push({ instance: new Tone.Player() })
+          context.crossFade.fade.value = 0.5
+          context.players[0].instance.mute = context.muted
+          context.players[1].instance.mute = context.muted
+          context.players[0].instance.connect(context.crossFade.a)
+          context.players[1].instance.connect(context.crossFade.b)
 
-        // click volume slider to change volume
-        const volumeSlider = this.$refs.volumeSlider
-        volumeSlider.addEventListener(
-          'click',
-          (e) => {
-            const sliderWidth = window.getComputedStyle(volumeSlider).width
-            const newVolume = e.offsetX / parseInt(sliderWidth)
-            this.$refs.volumePercentage.style.width = newVolume * 100 + '%'
-            context.players[0].instance.volume.value = -(100 - newVolume * 100)
-            context.players[1].instance.volume.value = -(100 - newVolume * 100)
-            this.muted = false
-            context.players[0].instance.mute = false
-            context.players[1].instance.mute = false
-          },
-          false
-        )
-        context.showLoader = true
-        context.toneAudioBuffers = new Tone.ToneAudioBuffers(
-          [context.source],
-          () => {
-            context.showLoader = false
-            context.players[
-              context.currentPlayer
-            ].instance.buffer = context.toneAudioBuffers.get(
-              context.currentPlayer
-            )
-            context.first = false
-            context.toggle()
-          }
-        )
-      } else {
-        context.toggle()
-      }
+          // click volume slider to change volume
+          const volumeSlider = this.$refs.volumeSlider
+          volumeSlider.addEventListener(
+            'click',
+            (e) => {
+              const sliderWidth = window.getComputedStyle(volumeSlider).width
+              const newVolume = e.offsetX / parseInt(sliderWidth)
+              this.$refs.volumePercentage.style.width = newVolume * 100 + '%'
+              context.players[0].instance.volume.value = -(
+                100 -
+                newVolume * 100
+              )
+              context.players[1].instance.volume.value = -(
+                100 -
+                newVolume * 100
+              )
+              this.muted = false
+              context.players[0].instance.mute = false
+              context.players[1].instance.mute = false
+            },
+            false
+          )
+          context.showLoader = true
+          context.toneAudioBuffers = new Tone.ToneAudioBuffers(
+            [context.source],
+            () => {
+              context.showLoader = false
+              context.players[
+                context.currentPlayer
+              ].instance.buffer = context.toneAudioBuffers.get(
+                context.currentPlayer
+              )
+              context.first = false
+              context.toggle()
+            }
+          )
+        } else {
+          context.toggle()
+        }
+      })
     },
     mute() {
       const context = this

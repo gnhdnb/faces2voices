@@ -61,6 +61,58 @@ export default {
   methods: {
     start() {
       const context = this
+      Tone.context.resume().then(() => {
+        if (context.first) {
+          context.showLoader = true
+          context.player = new Tone.Player(context.source, () => {
+            context.player.loop = context.loop
+            context.player.volume.value = -10
+            context.showLoader = false
+            // click volume slider to change volume
+            const volumeSlider = this.$refs.volumeSlider
+            volumeSlider.addEventListener(
+              'click',
+              (e) => {
+                const sliderWidth = window.getComputedStyle(volumeSlider).width
+                const newVolume = e.offsetX / parseInt(sliderWidth)
+                this.$refs.volumePercentage.style.width = newVolume * 100 + '%'
+                this.player.volume.value = -(100 - newVolume * 100)
+                this.muted = false
+                context.player.mute = false
+              },
+              false
+            )
+            context.first = false
+            context.toggle()
+          }).toDestination()
+        } else {
+          context.toggle()
+        }
+      })
+    },
+    toggle() {
+      const context = this
+      if (context.disabled) {
+        return false
+      }
+      if (context.play) {
+        clearInterval(context.interval)
+        context.player.stop()
+      } else {
+        context.player.start(0, context.time / 1000)
+        context.interval = setInterval(() => {
+          context.time += 100
+        }, 100)
+      }
+      context.play = !context.play
+    },
+    mute() {
+      const context = this
+      if (context.first) {
+        return false
+      }
+      context.muted = !context.muted
+      context.player.mute = !context.player.mute
     },
   },
 }
