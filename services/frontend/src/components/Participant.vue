@@ -33,7 +33,11 @@ export default {
       class="participant__spectrogram mb-10"
       :src="imgURI"
     />
-    <player v-if="voiceURI && voiceURI.length" :source="voiceURI">
+    <player
+      v-if="voiceURI && voiceURI.length"
+      :id="`participant`"
+      :source="voiceURI"
+    >
       <div style="position: relative">Your voice</div>
     </player>
   </div>

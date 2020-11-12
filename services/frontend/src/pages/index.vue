@@ -47,10 +47,12 @@ export default {
 <template>
   <div class="page__wrapper">
     <p class="title mt-20 mb-10">Faces2Voices</p>
-    <player
+    <live-player
       class="mb-20"
-      :source="`https://faces2voices.blob.core.windows.net/imagesandspecs/4518b8f3-f7bd-439b-99a1-40dc3b7a2ad9.wav`"
-      :disabled="true"
+      :id="`stream`"
+      :source="`https://raw.githubusercontent.com/prof3ssorSt3v3/media-sample-files/master/fight-club.mp3`"
+      :disabled="false"
+      :loop="true"
     >
       <div style="position: relative">
         Live<span
@@ -67,7 +69,7 @@ export default {
           "
         ></span>
       </div>
-    </player>
+    </live-player>
     <p class="description mb-10">
       Faces2Voices is an online interactive installation which uses facial
       recognition technology to create a generative music composition based on

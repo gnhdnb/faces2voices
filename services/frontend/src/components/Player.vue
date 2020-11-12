@@ -3,12 +3,14 @@
     <div
       class="player__controls"
       :style="{ cursor: disabled ? 'not-allowed' : 'pointer' }"
-      @click="toggle"
     >
       <svg-icon
+        v-if="loaded"
+        @click="toggle"
         style="height: 18px; width: 20px"
         :name="play ? 'pause' : 'play'"
       />
+      <loader v-else :id="`player`" :show_text="false" />
     </div>
     <div class="player__slot-wrapper">
       <slot />
@@ -27,8 +29,13 @@
   </div>
 </template>
 <script>
+import * as Tone from 'tone'
 export default {
   props: {
+    id: {
+      type: String,
+      required: true,
+    },
     source: {
       type: String,
       default: '',
@@ -37,25 +44,24 @@ export default {
       type: Boolean,
       default: false,
     },
+    loop: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
       play: false,
       muted: false,
+      loaded: false,
     }
   },
   mounted() {
     const context = this
-
-    this.audio = new Audio(context.source)
-
-    context.audio.addEventListener(
-      'loadeddata',
-      () => {
-        context.audio.volume = 0.75
-      },
-      false
-    )
+    context.player = new Tone.Player(context.source, () => {
+      context.player.loop = context.loop
+      context.loaded = true
+    }).toDestination()
 
     // click volume slider to change volume
     const volumeSlider = this.$refs.volumeSlider
@@ -63,16 +69,12 @@ export default {
       'click',
       (e) => {
         const sliderWidth = window.getComputedStyle(volumeSlider).width
-        let newVolume = e.offsetX / parseInt(sliderWidth)
-        if (newVolume > 1) {
-          newVolume = 1
-        }
-        context.audio.volume = newVolume
+        const newVolume = e.offsetX / parseInt(sliderWidth)
         this.$refs.volumePercentage.style.width = newVolume * 100 + '%'
-        if (newVolume) {
-          this.muted = false
-          this.audio.muted = false
-        }
+        console.log(-(100 - newVolume * 100))
+        this.player.volume.value = -(100 - newVolume * 100)
+        this.muted = false
+        context.player.mute = false
       },
       false
     )
@@ -83,11 +85,13 @@ export default {
         return false
       }
       this.play = !this.play
-      this.play ? this.audio.play() : this.audio.pause()
+      this.play ? this.player.start() : this.player.stop()
+      this.player.volume.value = -10
     },
     mute() {
       this.muted = !this.muted
-      this.audio.muted = !this.audio.muted
+      console.log(this.player.volume.value)
+      this.player.mute = !this.player.mute
     },
   },
 }
