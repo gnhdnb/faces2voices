@@ -47,6 +47,7 @@ export default {
 <template>
   <div class="page__wrapper">
     <p class="title mt-20 mb-10">Faces2Voices</p>
+    <!--
     <live-player
       class="mb-20"
       :id="`stream`"
@@ -70,6 +71,7 @@ export default {
         ></span>
       </div>
     </live-player>
+    -->
     <p class="description mb-10">
       Faces2Voices is an online interactive installation which uses facial
       recognition technology to create a generative music composition based on
