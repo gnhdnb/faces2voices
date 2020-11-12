@@ -50,7 +50,7 @@ export default {
     <live-player
       class="mb-20"
       :id="`stream`"
-      :source="`https://raw.githubusercontent.com/prof3ssorSt3v3/media-sample-files/master/fight-club.mp3`"
+      :source="`https://faces2voices.blob.core.windows.net/imagesandspecs/audio.wav`"
       :disabled="false"
       :loop="true"
     >

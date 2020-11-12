@@ -117,10 +117,9 @@ export default {
         )
         let startDownload = true
         context.interval = setInterval(() => {
-          context.time += 50
+          context.time += 100
           if (context.time > duration / 2) {
             if (startDownload) {
-              console.log('Нужно скачать')
               context.toneAudioBuffers.add(
                 context.nextPlayer,
                 context.source,
@@ -135,7 +134,7 @@ export default {
             }
             startDownload = false
           }
-          if (duration - context.time < 300) {
+          if (duration - context.time < 13900) {
             const i = context.currentPlayer
             context.currentPlayer = context.nextPlayer
             context.nextPlayer = i
@@ -147,7 +146,7 @@ export default {
             startDownload = true
             context.players[context.currentPlayer].instance.start()
           }
-        }, 50)
+        }, 100)
       }
       context.play = !context.play
     },
