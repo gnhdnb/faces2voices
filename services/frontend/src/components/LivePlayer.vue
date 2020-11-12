@@ -9,7 +9,7 @@
         v-else
         style="height: 18px; width: 20px"
         :name="play ? 'pause' : 'play'"
-        @click="toggle"
+        @click="start"
       />
     </div>
     <div class="player__slot-wrapper">
@@ -63,17 +63,9 @@ export default {
     context.crossFade = new Tone.CrossFade().toDestination()
     context.players.push({ time: 0, timer: {}, instance: new Tone.Player() })
     context.players.push({ time: 0, timer: {}, instance: new Tone.Player() })
-    context.showLoader = true
-    context.toneAudioBuffers = new Tone.ToneAudioBuffers(
-      [context.source],
-      () => {
-        context.showLoader = false
-        context.players[
-          context.currentPlayer
-        ].instance.buffer = context.toneAudioBuffers.get(context.currentPlayer)
-      }
-    )
     context.crossFade.fade.value = 0.5
+    context.players[0].instance.mute = context.muted
+    context.players[1].instance.mute = context.muted
     context.players[0].instance.connect(context.crossFade.a)
     context.players[1].instance.connect(context.crossFade.b)
 
@@ -97,9 +89,6 @@ export default {
   methods: {
     toggle() {
       const context = this
-      if (context.disabled) {
-        return false
-      }
       if (context.play) {
         clearInterval(context.interval)
         for (const player of context.players) {
@@ -150,8 +139,35 @@ export default {
       }
       context.play = !context.play
     },
+    start() {
+      const context = this
+      if (context.disabled) {
+        return false
+      }
+      if (context.first) {
+        context.showLoader = true
+        context.toneAudioBuffers = new Tone.ToneAudioBuffers(
+          [context.source],
+          () => {
+            context.showLoader = false
+            context.players[
+              context.currentPlayer
+            ].instance.buffer = context.toneAudioBuffers.get(
+              context.currentPlayer
+            )
+            context.first = false
+            context.toggle()
+          }
+        )
+      } else {
+        context.toggle()
+      }
+    },
     mute() {
       const context = this
+      if (context.first) {
+        return false
+      }
       context.muted = !context.muted
       context.players[0].instance.mute = !context.players[0].instance.mute
       context.players[1].instance.mute = !context.players[1].instance.mute
