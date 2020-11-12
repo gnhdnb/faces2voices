@@ -13,7 +13,13 @@
       />
     </div>
     <div class="player__slot-wrapper">
-      <slot />
+      <div
+        style="position: relative; cursor: pointer"
+        v-if="!showLoader"
+        @click="start"
+      >
+        Live<span id="live"></span>
+      </div>
     </div>
     <div class="volume-container">
       <div class="volume-button" @click="mute">
@@ -181,5 +187,5 @@ export default {
 }
 </script>
 <style lang="scss">
-@import '@/assets/styles/components/Player.scss';
+@import '@/assets/styles/components/LivePlayer.scss';
 </style>

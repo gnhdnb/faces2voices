@@ -48,39 +48,30 @@ export default {
   <div class="page__wrapper">
     <p class="title mt-20 mb-10">Faces2Voices</p>
     <live-player
-      class="mb-20"
       :id="`stream`"
+      class="mb-20"
       :source="`https://faces2voices.blob.core.windows.net/imagesandspecs/audio.wav`"
       :disabled="false"
       :loop="true"
-    >
-      <div style="position: relative">
-        Live<span
-          style="
-            display: block;
-            height: 10px;
-            width: 10px;
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            border-radius: 50%;
-            background: #f21e2b;
-            animation: glowing 1s infinite;
-          "
-        ></span>
-      </div>
-    </live-player>
+    />
     <p class="description mb-10">
       Faces2Voices is an online interactive installation which uses facial
-      recognition technology to create a generative music composition based on
-      imaginary voices of online visitors. The composition is evolving in time
-      depending on the contributions of people involved.
+      recognition technology and AI-synthesized sound to create a generative
+      music composition based on imaginary voices of online visitors. The
+      composition is evolving in time depending on the contributions of people
+      involved.
+    </p>
+    <p class="description mb-10">
+      Many governments use surveillance technology as a way to control the
+      spread of COVID-19. At the same moment many citizens are ready to give up
+      some privacy for the common good. But how can we define what level of
+      privacy should we give up and how much data do governments really need to
+      respond effectively?
     </p>
     <p class="description mb-20">
-      Faces2Voices is an online interactive installation which uses facial
-      recognition technology to create a generative music composition based on
-      imaginary voices of online visitors. The composition is evolving in time
-      depending on the contributions of people involved.
+      You can contribute to the project by giving access to the camera of your
+      device. AI will recognise your face, synthesise your imaginary voice and
+      add it to the live stream.
     </p>
     <camera v-if="!participant" class="mb-10" />
     <participant v-else class="mb-10" />
@@ -99,6 +90,16 @@ export default {
       <a class="links" href="https://gnhdnb.github.io" target="_blank"
         >Nikita Prudnikov</a
       >
+    </p>
+    <p id="inspired" class="mb-10">
+      inspired by
+      <a
+        class="mb-20 links"
+        target="_blank"
+        href="https://arxiv.org/pdf/1905.09773.pdf"
+      >
+        Speech2Face
+      </a>
     </p>
     <p id="developer" class="mb-10">
       designed by

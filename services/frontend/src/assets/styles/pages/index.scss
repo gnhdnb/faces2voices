@@ -57,3 +57,11 @@
   @include adaptiv-font(14, 10);
   line-height: 17px;
 }
+#inspired{
+  font-family: 'Verdana-Regular';
+  font-style: normal;
+  font-weight: normal;
+  line-height: 22px;
+  @include adaptiv-font(16, 12);
+  color: #121212;
+}
