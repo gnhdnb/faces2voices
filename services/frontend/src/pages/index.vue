@@ -70,13 +70,13 @@ export default {
     </p>
     <p class="description mb-20">
       You can contribute to the project by giving access to the camera of your
-      device. AI will recognise your face, synthesise your imaginary voice and
+      device. AI will recognise your face, synthesize your imaginary voice and
       add it to the live stream.
     </p>
     <camera v-if="!participant" class="mb-10" />
     <participant v-else class="mb-10" />
-    <p id="privacy_statement" class="mb-20">
-      <span class="bold">Privacy statement</span><br />
+    <p id="title">Privacy statement</p>
+    <p class="description mb-20">
       We are implementing a responsible data policy. The project doesn't store
       or share personal data of participants, but only save and use fictional
       voice synthesiser metadata.

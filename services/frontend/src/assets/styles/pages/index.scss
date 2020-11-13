@@ -21,26 +21,23 @@
   max-width: 609px;
   width: 100%;
   font-family:'Verdana-Regular';
+  font-weight: bolder;
+  text-align: justify;
   line-height: 17px;
-  text-align: center;
   color: black;
   @include adaptiv-font(14, 10);
+  
 }
-
-#privacy_statement{
-  font-family: 'Verdana-Regular';
-  font-style: normal;
-  font-weight: normal;
-  @include adaptiv-font(14, 10);
-  line-height: 17px;
-  text-align: center;
-  color: black;
+#title{
+  font-style: italic;
+  font-weight: bold;
   max-width: 609px;
   width: 100%;
-  .bold{
-    font-style: italic;
-    font-weight: bold;
-  }
+  font-family:'Verdana-Regular';
+  text-align: center;
+  line-height: 17px;
+  color: black;
+  @include adaptiv-font(14, 10);
 }
 #authors{
   font-family: 'Verdana-Regular';
