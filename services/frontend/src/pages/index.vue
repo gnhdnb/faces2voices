@@ -50,7 +50,7 @@ export default {
     <live-player
       :id="`stream`"
       class="mb-20"
-      :source="`https://faces2voices.blob.core.windows.net/imagesandspecs/audio.wav`"
+      :source="`https://faces2voices.blob.core.windows.net/imagesandspecs/audio.mp3`"
       :disabled="false"
       :loop="true"
     />
@@ -62,7 +62,7 @@ export default {
       involved.
     </p>
     <p class="description mb-10">
-      Many governments use surveillance technology as a way to control the
+      Lots of governments use surveillance technology as a way to control the
       spread of COVID-19. At the same moment many citizens are ready to give up
       some privacy for the common good. But how can we define what level of
       privacy should we give up and how much data do governments really need to

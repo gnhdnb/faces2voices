@@ -65,8 +65,11 @@ export default {
         if (context.first) {
           context.showLoader = true
           context.player = new Tone.Player(context.source, () => {
-            context.player.loop = context.loop
             context.player.volume.value = -10
+            context.player.onstop = function () {
+              context.play = false
+              context.time = 0
+            }
             context.showLoader = false
             // click volume slider to change volume
             const volumeSlider = this.$refs.volumeSlider

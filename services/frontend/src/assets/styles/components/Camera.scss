@@ -31,3 +31,10 @@
     left: 0;
   }
 }
+#timeLeft{
+  font-family: 'Verdana-Bold-Italic';
+  font-size: 16px;
+  line-height: 22px;
+  @include adaptiv-font(16, 12);
+  position: absolute;
+}
