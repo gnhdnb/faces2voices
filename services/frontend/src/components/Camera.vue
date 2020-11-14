@@ -137,7 +137,7 @@ export default {
           context.setLoaderProps({
             id: 'camera',
             propID: 'message',
-            value: 'Initialize camera',
+            value: '',
           })
           context.setLoaderProps({
             id: 'camera',
@@ -159,7 +159,7 @@ export default {
               context.setLoaderProps({
                 id: 'camera',
                 propID: 'message',
-                value: 'Inialize FaceAPI',
+                value: '',
               })
               context.cameraStatus = true
               context

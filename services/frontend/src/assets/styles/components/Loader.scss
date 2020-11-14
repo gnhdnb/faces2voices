@@ -43,7 +43,7 @@
     }
     &__msg{
         margin-top: 15px;
-        font-size: 14px;
+        @include adaptiv-font(14, 10);
         color: black;
         font-family: 'Verdana-Regular';
     }

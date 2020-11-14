@@ -11,7 +11,9 @@
         name="cross"
       />
     </div>
-    <span v-if="show_text" class="loader__msg">{{ loader.message }}</span>
+    <span v-if="show_text || loader.message.length" class="loader__msg">{{
+      loader.message
+    }}</span>
   </div>
 </template>
 <style lang="scss">
