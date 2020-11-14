@@ -104,6 +104,7 @@ export default {
                   ].instance.buffer = context.toneAudioBuffers.get(
                     context.nextPlayer
                   )
+                  console.log('Success')
                 },
                 (e) => {
                   console.log('Error when adding to buffer')
