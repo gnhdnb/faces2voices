@@ -4,7 +4,7 @@
       class="player__controls"
       :style="{ cursor: disabled ? 'not-allowed' : 'pointer' }"
     >
-      <loader v-if="showLoader" :id="`player`" :show_text="false" />
+      <loader v-if="showLoader" :id="`player`" />
       <svg-icon
         v-else
         style="height: 18px; width: 20px"
@@ -66,15 +66,21 @@ export default {
   },
   methods: {
     toggle() {
+      console.log('toggle event')
       const context = this
       if (context.play) {
+        console.log('stop playing')
         clearInterval(context.interval)
         for (const player of context.players) {
           if (player.instance.state === 'started') {
             player.instance.stop()
+            console.log('stop player')
           }
         }
       } else {
+        console.log(
+          `start player ${context.currentPlayer} from ${context.time}`
+        )
         context.players[context.currentPlayer].instance.start(
           0,
           context.time / 1000
@@ -82,11 +88,13 @@ export default {
         let duration = Math.round(
           context.players[context.currentPlayer].instance.buffer.duration * 1000
         )
+        console.log(`duration is ${duration}`)
         let startDownload = true
         context.interval = setInterval(() => {
           context.time += 100
           if (context.time > duration / 2) {
             if (startDownload) {
+              console.log('Time to download')
               context.toneAudioBuffers.add(
                 context.nextPlayer,
                 context.source,
@@ -96,12 +104,17 @@ export default {
                   ].instance.buffer = context.toneAudioBuffers.get(
                     context.nextPlayer
                   )
+                },
+                (e) => {
+                  console.log('Error when adding to buffer')
+                  console.log(e)
                 }
               )
             }
             startDownload = false
           }
           if (duration - context.time < 13900) {
+            console.log('Prepare to start next player')
             const i = context.currentPlayer
             context.currentPlayer = context.nextPlayer
             context.nextPlayer = i
@@ -109,21 +122,28 @@ export default {
               context.players[context.currentPlayer].instance.buffer.duration *
                 1000
             )
+            console.log(`New player duration is ${duration}`)
             context.time = 0
             startDownload = true
+            console.log('Start current player')
             context.players[context.currentPlayer].instance.start()
+            console.log(
+              `State: ${context.players[context.currentPlayer].instance.state}`
+            )
           }
         }, 100)
       }
       context.play = !context.play
     },
     start() {
+      console.log('start event')
       const context = this
       if (context.disabled) {
         return false
       }
       Tone.context.resume().then(() => {
         if (context.first) {
+          console.log('Create players and buffers')
           context.crossFade = new Tone.CrossFade().toDestination()
           context.players.push({ instance: new Tone.Player() })
           context.players.push({ instance: new Tone.Player() })
@@ -138,8 +158,15 @@ export default {
           volumeSlider.addEventListener(
             'click',
             (e) => {
-              const sliderWidth = window.getComputedStyle(volumeSlider).width
-              const newVolume = e.offsetX / parseInt(sliderWidth)
+              // const sliderWidth = window.getComputedStyle(volumeSlider).width
+              // const newVolume = e.offsetX / parseInt(sliderWidth)
+              console.log(
+                `First player state: ${context.players[0].instance.state}`
+              )
+              console.log(
+                `Second player state: ${context.players[1].instance.state}`
+              )
+              /*
               this.$refs.volumePercentage.style.width = newVolume * 100 + '%'
               context.players[0].instance.volume.value = -(
                 100 -
@@ -149,6 +176,7 @@ export default {
                 100 -
                 newVolume * 100
               )
+              */
               this.muted = false
               context.players[0].instance.mute = false
               context.players[1].instance.mute = false
@@ -159,6 +187,7 @@ export default {
           context.toneAudioBuffers = new Tone.ToneAudioBuffers(
             [context.source],
             () => {
+              console.log('Buffer created')
               context.showLoader = false
               context.players[
                 context.currentPlayer

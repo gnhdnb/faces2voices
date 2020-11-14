@@ -4,7 +4,7 @@
       class="player__controls"
       :style="{ cursor: disabled ? 'not-allowed' : 'pointer' }"
     >
-      <loader v-if="showLoader" :id="`player`" :show_text="false" />
+      <loader v-if="showLoader" :id="`player`" />
       <svg-icon
         v-else
         style="height: 18px; width: 20px"

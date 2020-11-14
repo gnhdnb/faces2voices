@@ -11,7 +11,7 @@
         name="cross"
       />
     </div>
-    <span v-if="show_text || loader.message.length" class="loader__msg">{{
+    <span v-if="loader.message.length" class="loader__msg">{{
       loader.message
     }}</span>
   </div>
@@ -27,10 +27,6 @@ export default {
     id: {
       type: String,
       default: 'default',
-    },
-    show_text: {
-      type: Boolean,
-      default: true,
     },
   },
   computed: {
