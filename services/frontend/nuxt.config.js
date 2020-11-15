@@ -26,7 +26,7 @@ export default {
   pwa,
   styleResources,
   router: {
-    base: '/faces2voices/'
+    base: '/'
   },
   svgSprite: {
     input: '~/assets/svg',

@@ -4,13 +4,13 @@
       class="player__controls"
       :style="{ cursor: disabled ? 'not-allowed' : 'pointer' }"
     >
+      <loader v-if="showLoader" :id="`player`" />
       <svg-icon
-        v-if="loaded"
-        @click="toggle"
+        v-else
         style="height: 18px; width: 20px"
         :name="play ? 'pause' : 'play'"
+        @click="start"
       />
-      <loader v-else :id="`player`" :show_text="false" />
     </div>
     <div class="player__slot-wrapper">
       <slot />
@@ -53,45 +53,74 @@ export default {
     return {
       play: false,
       muted: false,
-      loaded: false,
+      showLoader: false,
+      first: true,
+      time: 0,
     }
   },
-  mounted() {
-    const context = this
-    context.player = new Tone.Player(context.source, () => {
-      context.player.loop = context.loop
-      context.loaded = true
-    }).toDestination()
-
-    // click volume slider to change volume
-    const volumeSlider = this.$refs.volumeSlider
-    volumeSlider.addEventListener(
-      'click',
-      (e) => {
-        const sliderWidth = window.getComputedStyle(volumeSlider).width
-        const newVolume = e.offsetX / parseInt(sliderWidth)
-        this.$refs.volumePercentage.style.width = newVolume * 100 + '%'
-        console.log(-(100 - newVolume * 100))
-        this.player.volume.value = -(100 - newVolume * 100)
-        this.muted = false
-        context.player.mute = false
-      },
-      false
-    )
-  },
   methods: {
+    start() {
+      const context = this
+      Tone.context.resume().then(() => {
+        if (context.first) {
+          context.showLoader = true
+          context.player = new Tone.Player(context.source, () => {
+            context.player.volume.value = 0
+            context.player.onstop = function () {
+              context.play = false
+              context.time = 0
+            }
+            context.showLoader = false
+            // click volume slider to change volume
+            const volumeSlider = this.$refs.volumeSlider
+            volumeSlider.addEventListener(
+              'click',
+              (e) => {
+                const sliderWidth = window.getComputedStyle(volumeSlider).width
+                let newVolume = e.offsetX / parseInt(sliderWidth)
+                context.$refs.volumePercentage.style.width =
+                  newVolume * 100 + '%'
+                newVolume = (newVolume * 100) / 5 - 10
+                if (newVolume === -10) {
+                  return context.mute()
+                }
+                context.player.volume.value = newVolume
+                context.muted = false
+                context.player.mute = false
+              },
+              false
+            )
+            context.first = false
+            context.toggle()
+          }).toDestination()
+        } else {
+          context.toggle()
+        }
+      })
+    },
     toggle() {
-      if (this.disabled) {
+      const context = this
+      if (context.disabled) {
         return false
       }
-      this.play = !this.play
-      this.play ? this.player.start() : this.player.stop()
-      this.player.volume.value = -10
+      if (context.play) {
+        clearInterval(context.interval)
+        context.player.stop()
+      } else {
+        context.player.start()
+        context.interval = setInterval(() => {
+          context.time += 100
+        }, 100)
+      }
+      context.play = !context.play
     },
     mute() {
-      this.muted = !this.muted
-      console.log(this.player.volume.value)
-      this.player.mute = !this.player.mute
+      const context = this
+      if (context.first) {
+        return false
+      }
+      context.muted = !context.muted
+      context.player.mute = !context.player.mute
     },
   },
 }

@@ -48,44 +48,35 @@ export default {
   <div class="page__wrapper">
     <p class="title mt-20 mb-10">Faces2Voices</p>
     <live-player
-      class="mb-20"
       :id="`stream`"
-      :source="`https://raw.githubusercontent.com/prof3ssorSt3v3/media-sample-files/master/fight-club.mp3`"
+      class="mb-20"
+      :source="`https://faces2voices.blob.core.windows.net/imagesandspecs/audio.mp3`"
       :disabled="false"
       :loop="true"
-    >
-      <div style="position: relative">
-        Live<span
-          style="
-            display: block;
-            height: 10px;
-            width: 10px;
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            border-radius: 50%;
-            background: #f21e2b;
-            animation: glowing 1s infinite;
-          "
-        ></span>
-      </div>
-    </live-player>
+    />
     <p class="description mb-10">
       Faces2Voices is an online interactive installation which uses facial
-      recognition technology to create a generative music composition based on
-      imaginary voices of online visitors. The composition is evolving in time
-      depending on the contributions of people involved.
+      recognition technology and AI-synthesized sound to create a generative
+      music composition based on imaginary voices of online visitors. The
+      composition is evolving in time depending on the contributions of people
+      involved.
+    </p>
+    <p class="description mb-10">
+      Lots of governments use surveillance technology as a way to control the
+      spread of COVID-19. At the same moment many citizens are ready to give up
+      some privacy for the common good. But how can we define what level of
+      privacy should we give up and how much data do governments really need to
+      respond effectively?
     </p>
     <p class="description mb-20">
-      Faces2Voices is an online interactive installation which uses facial
-      recognition technology to create a generative music composition based on
-      imaginary voices of online visitors. The composition is evolving in time
-      depending on the contributions of people involved.
+      You can contribute to the project by giving access to the camera of your
+      device. AI will recognise your face, synthesize your imaginary voice and
+      add it to the live stream.
     </p>
     <camera v-if="!participant" class="mb-10" />
     <participant v-else class="mb-10" />
-    <p id="privacy_statement" class="mb-20">
-      <span class="bold">Privacy statement</span><br />
+    <p id="title">Privacy statement</p>
+    <p class="description mb-20">
       We are implementing a responsible data policy. The project doesn't store
       or share personal data of participants, but only save and use fictional
       voice synthesiser metadata.
@@ -100,12 +91,23 @@ export default {
         >Nikita Prudnikov</a
       >
     </p>
+    <p id="inspired" class="mb-10">
+      inspired by
+      <a
+        class="mb-20 links"
+        target="_blank"
+        href="https://arxiv.org/pdf/1905.09773.pdf"
+      >
+        Speech2Face
+      </a>
+    </p>
     <p id="developer" class="mb-10">
       designed by
       <a class="links" href="https://reverse-studio.web.app/faces2voices"
         ><u>Nikita Morozov</u></a
       >
     </p>
+    <!--
     <a
       class="mb-20"
       target="_blank"
@@ -113,6 +115,7 @@ export default {
     >
       <svg-icon style="height: 30px; width: 30px" name="github" />
     </a>
+    -->
   </div>
 </template>
 <style lang="scss">

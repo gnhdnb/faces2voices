@@ -1,12 +1,20 @@
 <template>
-  <div class="camera__wrapper">
-    <div v-if="cameraStatus" ref="cameraWrapper" class="camera__video">
+  <div class="camera__wrapper" ref="cameraWrapper">
+    <div v-if="cameraStatus" ref="cameraVideo" class="camera__video">
       <canvas ref="canvas" class="camera__canvas"></canvas>
       <div ref="canvasWrapper" class="camera__canvas"></div>
     </div>
     <div v-else class="camera__button" @click="turnOnCamera">
       <svg-icon style="height: 40px; width: 40px" name="camera" />
     </div>
+    <span v-if="timeLeft" id="timeLeft"
+      >synthesizing imaginary voice, time left:
+      {{
+        Math.floor(timeLeft / 60)
+          ? `${Math.floor(timeLeft / 60)} min`
+          : `${timeLeft} sec`
+      }}</span
+    >
     <loader :id="`camera`" />
   </div>
 </template>
@@ -22,6 +30,10 @@ export default {
       cameraStatus: false,
       dates: [],
       descriptors: [],
+      timeLeft: 0,
+      sending: false,
+      height: 0,
+      width: 0,
     }
   },
   computed: {
@@ -49,6 +61,10 @@ export default {
         .post('/contribute', payload, { withCredentials: false })
         .then((response) => {
           if (response.status === 202) {
+            if (context.sending === false) {
+              context.timeLeft = response.data.secondsLeft
+            }
+            context.sending = true
             return setTimeout(context.sendDescriptors, 5000)
           } else {
             try {
@@ -71,6 +87,7 @@ export default {
                 }
               })
             } catch (e) {
+              console.log(e)
               context.setLoaderProps({
                 id: 'camera',
                 propID: 'status',
@@ -110,6 +127,13 @@ export default {
     },
     turnOnCamera() {
       const context = this
+      const top =
+        context.$refs.cameraWrapper.getBoundingClientRect().top + window.scrollY
+      window.scroll({
+        top,
+        left: 0,
+        behavior: 'smooth',
+      })
       return new Promise((resolve, reject) => {
         try {
           context.setLoaderProps({
@@ -120,7 +144,7 @@ export default {
           context.setLoaderProps({
             id: 'camera',
             propID: 'message',
-            value: 'Initialize camera',
+            value: '',
           })
           context.setLoaderProps({
             id: 'camera',
@@ -128,13 +152,21 @@ export default {
             value: false,
           })
           navigator.mediaDevices
-            .getUserMedia({ audio: false, video: true })
+            .getUserMedia({
+              audio: false,
+              video: {
+                facingMode: 'user',
+                frameRate: { ideal: 10, max: 15 },
+                width: { ideal: 1280 },
+                height: { ideal: 720 },
+              },
+            })
             .then((stream) => {
               context.stream = stream
               context.setLoaderProps({
                 id: 'camera',
                 propID: 'message',
-                value: 'Inialize FaceAPI',
+                value: '',
               })
               context.cameraStatus = true
               context
@@ -148,28 +180,32 @@ export default {
                   }
                   context.video.setAttribute('autoplay', '1')
                   context.video.setAttribute('muted', '1')
-                  context.video.setAttribute(
-                    'style',
-                    'opacity: 0; position: absolute; top: 0;left:0;'
-                  )
+
                   context.video.setAttribute('playsinline', '1')
                   context.video.setAttribute('webkit-playsinline', '1')
-                  context.video.setAttribute(
-                    'width',
-                    context.$refs.cameraWrapper.offsetWidth
-                  )
-                  context.video.setAttribute(
-                    'height',
-                    context.$refs.cameraWrapper.offsetHeight
-                  )
+
                   context.$refs.canvasWrapper.appendChild(context.video)
 
-                  context.video.addEventListener('play', function () {
+                  context.video.addEventListener('canplay', function () {
+                    context.width = context.$refs.cameraVideo.offsetWidth
+                    context.height =
+                      context.video.videoHeight /
+                      (context.video.videoWidth / context.width)
+                    context.$refs.cameraWrapper.setAttribute(
+                      'style',
+                      `height: ${context.height - 2}px;`
+                    )
+                    context.video.setAttribute(
+                      'style',
+                      'opacity: 0; position: absolute; top: 0;left:0;'
+                    )
                     context.setLoaderProps({
                       id: 'camera',
                       propID: 'hidden',
                       value: true,
                     })
+                    context.video.setAttribute('width', context.width)
+                    context.video.setAttribute('height', context.height)
                     context.play()
                   })
                 })

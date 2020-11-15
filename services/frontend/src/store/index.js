@@ -37,7 +37,7 @@ export const state = () => ({
   loaders: {
     default: {
       status: 'loading',
-      message: 'loading',
+      message: '',
       hidden: false,
     },
   },

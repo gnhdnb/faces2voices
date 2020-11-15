@@ -1,19 +1,25 @@
 <template>
-  <div ref="player" class="player__wrapper">
+  <div ref="player" class="player__wrapper" style="width: 500px">
     <div
       class="player__controls"
       :style="{ cursor: disabled ? 'not-allowed' : 'pointer' }"
     >
-      <loader v-if="showLoader" :id="`player`" :show_text="false" />
+      <loader v-if="showLoader" :id="`player`" />
       <svg-icon
         v-else
         style="height: 18px; width: 20px"
         :name="play ? 'pause' : 'play'"
-        @click="toggle"
+        @click="start"
       />
     </div>
     <div class="player__slot-wrapper">
-      <slot />
+      <div
+        v-if="!showLoader"
+        style="position: relative; cursor: pointer"
+        @click="start"
+      >
+        Live<span id="live"></span>
+      </div>
     </div>
     <div class="volume-container">
       <div class="volume-button" @click="mute">
@@ -50,109 +56,156 @@ export default {
       play: false,
       muted: false,
       showLoader: false,
+      downloading: false,
       first: true,
       crossFade: {},
       players: [],
       currentPlayer: 0,
       nextPlayer: 1,
       time: 0,
+      duration: 0,
+      loop: 1,
     }
   },
-  mounted() {
-    const context = this
-    context.crossFade = new Tone.CrossFade().toDestination()
-    context.players.push({ time: 0, timer: {}, instance: new Tone.Player() })
-    context.players.push({ time: 0, timer: {}, instance: new Tone.Player() })
-    context.showLoader = true
-    context.toneAudioBuffers = new Tone.ToneAudioBuffers(
-      [context.source],
-      () => {
-        context.showLoader = false
-        context.players[
-          context.currentPlayer
-        ].instance.buffer = context.toneAudioBuffers.get(context.currentPlayer)
-      }
-    )
-    context.crossFade.fade.value = 0.5
-    context.players[0].instance.connect(context.crossFade.a)
-    context.players[1].instance.connect(context.crossFade.b)
-
-    // click volume slider to change volume
-    const volumeSlider = this.$refs.volumeSlider
-    volumeSlider.addEventListener(
-      'click',
-      (e) => {
-        const sliderWidth = window.getComputedStyle(volumeSlider).width
-        const newVolume = e.offsetX / parseInt(sliderWidth)
-        this.$refs.volumePercentage.style.width = newVolume * 100 + '%'
-        context.players[0].instance.volume.value = -(100 - newVolume * 100)
-        context.players[1].instance.volume.value = -(100 - newVolume * 100)
-        this.muted = false
-        context.players[0].instance.mute = false
-        context.players[1].instance.mute = false
-      },
-      false
-    )
-  },
   methods: {
-    toggle() {
+    check() {
+      /*
+      const context = this
+      console.log(`First player state: ${context.players[0].instance.state}`)
+      console.log(`Second player state: ${context.players[1].instance.state}`)
+      */
+    },
+    startPlayer() {
+      console.log('Start method')
+      const context = this
+      context.players[context.currentPlayer].instance.start(
+        0,
+        context.time / 1000,
+        context.duration - context.time / 1000
+      )
+    },
+    download() {
+      const context = this
+      console.log(`Downloading started at time: ${context.time}`)
+      context.toneAudioBuffers.add(
+        context.nextPlayer,
+        context.source,
+        () => {
+          console.log('Success')
+          context.players[
+            context.nextPlayer
+          ].instance.buffer = context.toneAudioBuffers.get(context.nextPlayer)
+        },
+        (e) => {
+          console.log('Error when adding to buffer')
+          console.log(e)
+        }
+      )
+    },
+    start() {
+      console.log('start event')
       const context = this
       if (context.disabled) {
         return false
       }
-      if (context.play) {
+      Tone.context.resume().then(() => {
+        if (context.first) {
+          console.log('Create players and buffers')
+          context.crossFade = new Tone.CrossFade().toDestination()
+          context.players.push({ instance: new Tone.Player() })
+          context.players.push({ instance: new Tone.Player() })
+          context.crossFade.fade.value = 0.5
+          context.players[0].instance.mute = context.muted
+          context.players[1].instance.mute = context.muted
+          context.players[0].instance.connect(context.crossFade.a)
+          context.players[1].instance.connect(context.crossFade.b)
+
+          // click volume slider to change volume
+          const volumeSlider = this.$refs.volumeSlider
+          volumeSlider.addEventListener(
+            'click',
+            (e) => {
+              const sliderWidth = window.getComputedStyle(volumeSlider).width
+              let newVolume = e.offsetX / parseInt(sliderWidth)
+              this.$refs.volumePercentage.style.width = newVolume * 100 + '%'
+              newVolume = (newVolume * 100) / 5 - 10
+              if (newVolume === -10) {
+                return context.mute()
+              }
+              context.players[0].instance.volume.value = newVolume
+              context.players[1].instance.volume.value = newVolume
+              context.muted = false
+              context.players[0].instance.mute = false
+              context.players[1].instance.mute = false
+            },
+            false
+          )
+          context.showLoader = true
+          context.toneAudioBuffers = new Tone.ToneAudioBuffers(
+            [context.source],
+            () => {
+              console.log('Buffer created')
+              context.showLoader = false
+              context.players[
+                context.currentPlayer
+              ].instance.buffer = context.toneAudioBuffers.get(
+                context.currentPlayer
+              )
+              context.first = false
+              context.toggle()
+            }
+          )
+        } else {
+          context.toggle()
+        }
+      })
+    },
+    toggle() {
+      console.log('toggle event')
+      const context = this
+      if (context.play === false) {
+        console.log('Start playing song')
+        // Duration in miliseconds
+        context.duration = Math.floor(
+          context.players[context.currentPlayer].instance.buffer.duration * 1000
+        )
+        context.startPlayer()
+        context.interval = setInterval(() => {
+          context.time += 50
+          if (context.duration - context.time < 13000) {
+            console.log('Time left less than 13000 msc')
+            const i = context.currentPlayer
+            context.currentPlayer = context.nextPlayer
+            context.nextPlayer = i
+            context.duration += 0
+            context.time = 0
+            context.startPlayer()
+            context.loop += 1
+            context.downloading = false
+          }
+          if (context.downloading === false) {
+            if (context.time > context.duration / 2) {
+              context.download()
+              context.downloading = true
+            }
+          }
+        }, 50)
+      } else {
         clearInterval(context.interval)
         for (const player of context.players) {
           if (player.instance.state === 'started') {
             player.instance.stop()
+            console.log('stop player')
           }
         }
-      } else {
-        context.players[context.currentPlayer].instance.start(
-          0,
-          context.time / 1000
-        )
-        let duration = Math.round(
-          context.players[context.currentPlayer].instance.buffer.duration * 1000
-        )
-        let startDownload = true
-        context.interval = setInterval(() => {
-          context.time += 50
-          if (context.time > duration / 2) {
-            if (startDownload) {
-              console.log('Нужно скачать')
-              context.toneAudioBuffers.add(
-                context.nextPlayer,
-                context.source,
-                () => {
-                  context.players[
-                    context.nextPlayer
-                  ].instance.buffer = context.toneAudioBuffers.get(
-                    context.nextPlayer
-                  )
-                }
-              )
-            }
-            startDownload = false
-          }
-          if (duration - context.time < 300) {
-            const i = context.currentPlayer
-            context.currentPlayer = context.nextPlayer
-            context.nextPlayer = i
-            duration = Math.round(
-              context.players[context.currentPlayer].instance.buffer.duration *
-                1000
-            )
-            context.time = 0
-            startDownload = true
-            context.players[context.currentPlayer].instance.start()
-          }
-        }, 50)
       }
       context.play = !context.play
     },
     mute() {
       const context = this
+      if (context.first) {
+        return false
+      }
       context.muted = !context.muted
       context.players[0].instance.mute = !context.players[0].instance.mute
       context.players[1].instance.mute = !context.players[1].instance.mute
@@ -161,5 +214,5 @@ export default {
 }
 </script>
 <style lang="scss">
-@import '@/assets/styles/components/Player.scss';
+@import '@/assets/styles/components/LivePlayer.scss';
 </style>

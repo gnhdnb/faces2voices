@@ -11,7 +11,9 @@
         name="cross"
       />
     </div>
-    <span v-if="show_text" class="loader__msg">{{ loader.message }}</span>
+    <span v-if="loader.message.length" class="loader__msg">{{
+      loader.message
+    }}</span>
   </div>
 </template>
 <style lang="scss">
@@ -25,10 +27,6 @@ export default {
     id: {
       type: String,
       default: 'default',
-    },
-    show_text: {
-      type: Boolean,
-      default: true,
     },
   },
   computed: {
