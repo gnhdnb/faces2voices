@@ -71,83 +71,9 @@ export default {
     }
   },
   methods: {
-    toggle() {
-      console.log('toggle event')
+    download() {
       const context = this
-      if (context.play) {
-        console.log('stop playing')
-        clearInterval(context.interval)
-        for (const player of context.players) {
-          if (player.instance.state === 'started') {
-            player.instance.stop()
-            console.log('stop player')
-          }
-        }
-      } else {
-        console.log(
-          `start player ${context.currentPlayer} from ${context.time}`
-        )
-        context.players[context.currentPlayer].instance.start(
-          0,
-          context.time / 1000
-        )
-        context.duration = Math.round(
-          context.players[context.currentPlayer].instance.buffer.duration * 1000
-        )
-        console.log(`duration is ${context.duration}`)
-        let startDownload = true
-        context.interval = setInterval(() => {
-          context.time += 1
-          if (context.time > context.duration / 2) {
-            if (startDownload) {
-              console.log('Time to download')
-              context.toneAudioBuffers.add(
-                context.nextPlayer,
-                context.source,
-                () => {
-                  console.log('Success')
-                  context.players[
-                    context.nextPlayer
-                  ].instance.buffer = context.toneAudioBuffers.get(
-                    context.nextPlayer
-                  )
-                  console.log(`Player id ${context.nextPlayer}`)
-                  console.log(
-                    `Buffer: ${context.toneAudioBuffers.get(
-                      context.nextPlayer
-                    )}`
-                  )
-                },
-                (e) => {
-                  console.log('Error when adding to buffer')
-                  console.log(e)
-                }
-              )
-            }
-            startDownload = false
-          }
-          if (context.duration - context.time < 1000) {
-            console.log('Prepare to start next player')
-            context.players[context.currentPlayer].instance.stop()
-            const i = context.currentPlayer
-            context.currentPlayer = context.nextPlayer
-            context.nextPlayer = i
-            context.duration = Math.round(
-              context.players[context.currentPlayer].instance.buffer.duration *
-                1000
-            )
-            console.log(`New player duration is ${context.duration}`)
-            context.time = 0
-            startDownload = true
-            console.log('Start current player')
-            context.players[context.currentPlayer].instance.start()
-            console.log(
-              `State: ${context.players[context.currentPlayer].instance.state}`
-            )
-          }
-        }, 1)
-      }
-      context.play = !context.play
+      console.log(`Downloading started at time: ${context.time}`)
     },
     start() {
       console.log('start event')
@@ -162,6 +88,7 @@ export default {
           context.players.push({ instance: new Tone.Player() })
           context.players.push({ instance: new Tone.Player() })
           context.crossFade.fade.value = 0.5
+          context.players[0].instance.loop = true
           context.players[0].instance.mute = context.muted
           context.players[1].instance.mute = context.muted
           context.players[0].instance.connect(context.crossFade.a)
@@ -216,6 +143,49 @@ export default {
           context.toggle()
         }
       })
+    },
+    toggle() {
+      console.log('toggle event')
+      const context = this
+      if (context.play === false) {
+        console.log('Start playing song')
+        // Duration in miliseconds
+        context.duration =
+          context.players[context.currentPlayer].instance.buffer.duration * 1000
+        context.players[context.currentPlayer].instance.start(0)
+        console.log('Start interval')
+        let downloading = false
+        context.interval = setInterval(() => {
+          context.time += 50
+          if (context.duration - context.time < 2000) {
+            console.log('Time left less than 2000 msc')
+            context.players[context.currentPlayer].instance.stop()
+            context.duration += 0
+            context.time = 0
+            context.players[context.currentPlayer].instance.start()
+          }
+          if (downloading === false) {
+            if (context.time > context.duration / 2) {
+              downloading = true
+              context.download()
+            }
+          }
+        }, 50)
+        console.log(
+          `duration: ${
+            context.players[context.currentPlayer].instance.buffer.duration
+          }`
+        )
+      } else {
+        clearInterval(context.interval)
+        for (const player of context.players) {
+          if (player.instance.state === 'started') {
+            player.instance.stop()
+            console.log('stop player')
+          }
+        }
+      }
+      context.play = !context.play
     },
     mute() {
       const context = this
