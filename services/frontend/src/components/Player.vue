@@ -13,7 +13,7 @@
       />
     </div>
     <div class="player__slot-wrapper">
-      <slot @click="start" />
+      <slot />
     </div>
     <div class="volume-container">
       <div class="volume-button" @click="mute">

@@ -76,6 +76,7 @@ export default {
       */
     },
     startPlayer() {
+      console.log('Start method')
       const context = this
       context.players[context.currentPlayer].instance.start(
         0,
@@ -85,12 +86,12 @@ export default {
     },
     download() {
       const context = this
-      // console.log(`Downloading started at time: ${context.time}`)
+      console.log(`Downloading started at time: ${context.time}`)
       context.toneAudioBuffers.add(
         context.nextPlayer,
         context.source,
         () => {
-          // console.log('Success')
+          console.log('Success')
           context.players[
             context.nextPlayer
           ].instance.buffer = context.toneAudioBuffers.get(context.nextPlayer)
@@ -102,20 +103,18 @@ export default {
       )
     },
     start() {
-      // console.log('start event')
+      console.log('start event')
       const context = this
       if (context.disabled) {
         return false
       }
       Tone.context.resume().then(() => {
         if (context.first) {
-          // console.log('Create players and buffers')
+          console.log('Create players and buffers')
           context.crossFade = new Tone.CrossFade().toDestination()
           context.players.push({ instance: new Tone.Player() })
           context.players.push({ instance: new Tone.Player() })
           context.crossFade.fade.value = 0.5
-          context.players[0].instance.volume.value = 0
-          context.players[1].instance.volume.value = 0
           context.players[0].instance.mute = context.muted
           context.players[1].instance.mute = context.muted
           context.players[0].instance.connect(context.crossFade.a)
@@ -135,7 +134,7 @@ export default {
               }
               context.players[0].instance.volume.value = newVolume
               context.players[1].instance.volume.value = newVolume
-              this.muted = false
+              context.muted = false
               context.players[0].instance.mute = false
               context.players[1].instance.mute = false
             },
@@ -145,7 +144,7 @@ export default {
           context.toneAudioBuffers = new Tone.ToneAudioBuffers(
             [context.source],
             () => {
-              // console.log('Buffer created')
+              console.log('Buffer created')
               context.showLoader = false
               context.players[
                 context.currentPlayer
@@ -162,10 +161,10 @@ export default {
       })
     },
     toggle() {
-      // console.log('toggle event')
+      console.log('toggle event')
       const context = this
       if (context.play === false) {
-        // console.log('Start playing song')
+        console.log('Start playing song')
         // Duration in miliseconds
         context.duration = Math.floor(
           context.players[context.currentPlayer].instance.buffer.duration * 1000
@@ -174,7 +173,7 @@ export default {
         context.interval = setInterval(() => {
           context.time += 50
           if (context.duration - context.time < 13000) {
-            // console.log('Time left less than 2000 msc')
+            console.log('Time left less than 13000 msc')
             const i = context.currentPlayer
             context.currentPlayer = context.nextPlayer
             context.nextPlayer = i
@@ -196,7 +195,7 @@ export default {
         for (const player of context.players) {
           if (player.instance.state === 'started') {
             player.instance.stop()
-            // console.log('stop player')
+            console.log('stop player')
           }
         }
       }
