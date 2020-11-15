@@ -2,7 +2,7 @@
   "name": "faces2voices",
   "short_name": "faces2voices",
   "icons": [],
-  "start_url": "/faces2voices/?standalone=true",
+  "start_url": "/?standalone=true",
   "display": "fullscreen",
   "background_color": "#ffffff",
   "theme_color": "black",
