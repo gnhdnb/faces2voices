@@ -21,7 +21,6 @@
   max-width: 609px;
   width: 100%;
   font-family:'Verdana-Regular';
-  font-weight: bolder;
   text-align: justify;
   line-height: 17px;
   color: black;
@@ -44,7 +43,7 @@
   font-style: normal;
   font-weight: normal;
   line-height: 22px;
-  @include adaptiv-font(16, 12);
+  @include adaptiv-font(14, 10);
 }
 .links{
   color: #121212;
@@ -59,6 +58,6 @@
   font-style: normal;
   font-weight: normal;
   line-height: 22px;
-  @include adaptiv-font(16, 12);
+  @include adaptiv-font(14, 10);
   color: #121212;
 }

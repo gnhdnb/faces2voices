@@ -13,7 +13,7 @@
       />
     </div>
     <div class="player__slot-wrapper">
-      <slot />
+      <slot @click="start" />
     </div>
     <div class="volume-container">
       <div class="volume-button" @click="mute">
@@ -65,7 +65,7 @@ export default {
         if (context.first) {
           context.showLoader = true
           context.player = new Tone.Player(context.source, () => {
-            context.player.volume.value = -10
+            context.player.volume.value = 0
             context.player.onstop = function () {
               context.play = false
               context.time = 0
@@ -77,10 +77,15 @@ export default {
               'click',
               (e) => {
                 const sliderWidth = window.getComputedStyle(volumeSlider).width
-                const newVolume = e.offsetX / parseInt(sliderWidth)
-                this.$refs.volumePercentage.style.width = newVolume * 100 + '%'
-                this.player.volume.value = -(100 - newVolume * 100)
-                this.muted = false
+                let newVolume = e.offsetX / parseInt(sliderWidth)
+                context.$refs.volumePercentage.style.width =
+                  newVolume * 100 + '%'
+                newVolume = (newVolume * 100) / 5 - 10
+                if (newVolume === -10) {
+                  return context.mute()
+                }
+                context.player.volume.value = newVolume
+                context.muted = false
                 context.player.mute = false
               },
               false
@@ -102,7 +107,7 @@ export default {
         clearInterval(context.interval)
         context.player.stop()
       } else {
-        context.player.start(0, context.time / 1000)
+        context.player.start()
         context.interval = setInterval(() => {
           context.time += 100
         }, 100)

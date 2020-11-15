@@ -1,44 +1,35 @@
 <template>
-  <div>
-    duration: {{ duration }} <br />
-    time: {{ time }} <br />
-    currentPlayer: {{ currentPlayer }} <br />
-    nextPlayer: {{ nextPlayer }} <br />
-    downloading: {{ downloading }} <br />
-    loop: {{ loop }}
-    <button @click="check">Check players status</button>
-    <div ref="player" class="player__wrapper" style="width: 500px">
+  <div ref="player" class="player__wrapper" style="width: 500px">
+    <div
+      class="player__controls"
+      :style="{ cursor: disabled ? 'not-allowed' : 'pointer' }"
+    >
+      <loader v-if="showLoader" :id="`player`" />
+      <svg-icon
+        v-else
+        style="height: 18px; width: 20px"
+        :name="play ? 'pause' : 'play'"
+        @click="start"
+      />
+    </div>
+    <div class="player__slot-wrapper">
       <div
-        class="player__controls"
-        :style="{ cursor: disabled ? 'not-allowed' : 'pointer' }"
+        v-if="!showLoader"
+        style="position: relative; cursor: pointer"
+        @click="start"
       >
-        <loader v-if="showLoader" :id="`player`" />
+        Live<span id="live"></span>
+      </div>
+    </div>
+    <div class="volume-container">
+      <div class="volume-button" @click="mute">
         <svg-icon
-          v-else
           style="height: 18px; width: 20px"
-          :name="play ? 'pause' : 'play'"
-          @click="start"
+          :name="muted ? 'muted_speaker' : 'speaker'"
         />
       </div>
-      <div class="player__slot-wrapper">
-        <div
-          v-if="!showLoader"
-          style="position: relative; cursor: pointer"
-          @click="start"
-        >
-          Live<span id="live"></span>
-        </div>
-      </div>
-      <div class="volume-container">
-        <div class="volume-button" @click="mute">
-          <svg-icon
-            style="height: 18px; width: 20px"
-            :name="muted ? 'muted_speaker' : 'speaker'"
-          />
-        </div>
-        <div ref="volumeSlider" class="volume-slider">
-          <div ref="volumePercentage" class="volume-percentage"></div>
-        </div>
+      <div ref="volumeSlider" class="volume-slider">
+        <div ref="volumePercentage" class="volume-percentage"></div>
       </div>
     </div>
   </div>
@@ -78,9 +69,11 @@ export default {
   },
   methods: {
     check() {
+      /*
       const context = this
       console.log(`First player state: ${context.players[0].instance.state}`)
       console.log(`Second player state: ${context.players[1].instance.state}`)
+      */
     },
     startPlayer() {
       const context = this
@@ -92,12 +85,12 @@ export default {
     },
     download() {
       const context = this
-      console.log(`Downloading started at time: ${context.time}`)
+      // console.log(`Downloading started at time: ${context.time}`)
       context.toneAudioBuffers.add(
         context.nextPlayer,
         context.source,
         () => {
-          console.log('Success')
+          // console.log('Success')
           context.players[
             context.nextPlayer
           ].instance.buffer = context.toneAudioBuffers.get(context.nextPlayer)
@@ -109,18 +102,20 @@ export default {
       )
     },
     start() {
-      console.log('start event')
+      // console.log('start event')
       const context = this
       if (context.disabled) {
         return false
       }
       Tone.context.resume().then(() => {
         if (context.first) {
-          console.log('Create players and buffers')
+          // console.log('Create players and buffers')
           context.crossFade = new Tone.CrossFade().toDestination()
           context.players.push({ instance: new Tone.Player() })
           context.players.push({ instance: new Tone.Player() })
           context.crossFade.fade.value = 0.5
+          context.players[0].instance.volume.value = 0
+          context.players[1].instance.volume.value = 0
           context.players[0].instance.mute = context.muted
           context.players[1].instance.mute = context.muted
           context.players[0].instance.connect(context.crossFade.a)
@@ -131,19 +126,15 @@ export default {
           volumeSlider.addEventListener(
             'click',
             (e) => {
-              // const sliderWidth = window.getComputedStyle(volumeSlider).width
-              // const newVolume = e.offsetX / parseInt(sliderWidth)
-              /*
+              const sliderWidth = window.getComputedStyle(volumeSlider).width
+              let newVolume = e.offsetX / parseInt(sliderWidth)
               this.$refs.volumePercentage.style.width = newVolume * 100 + '%'
-              context.players[0].instance.volume.value = -(
-                100 -
-                newVolume * 100
-              )
-              context.players[1].instance.volume.value = -(
-                100 -
-                newVolume * 100
-              )
-              */
+              newVolume = (newVolume * 100) / 5 - 10
+              if (newVolume === -10) {
+                return context.mute()
+              }
+              context.players[0].instance.volume.value = newVolume
+              context.players[1].instance.volume.value = newVolume
               this.muted = false
               context.players[0].instance.mute = false
               context.players[1].instance.mute = false
@@ -154,7 +145,7 @@ export default {
           context.toneAudioBuffers = new Tone.ToneAudioBuffers(
             [context.source],
             () => {
-              console.log('Buffer created')
+              // console.log('Buffer created')
               context.showLoader = false
               context.players[
                 context.currentPlayer
@@ -171,10 +162,10 @@ export default {
       })
     },
     toggle() {
-      console.log('toggle event')
+      // console.log('toggle event')
       const context = this
       if (context.play === false) {
-        console.log('Start playing song')
+        // console.log('Start playing song')
         // Duration in miliseconds
         context.duration = Math.floor(
           context.players[context.currentPlayer].instance.buffer.duration * 1000
@@ -182,8 +173,8 @@ export default {
         context.startPlayer()
         context.interval = setInterval(() => {
           context.time += 50
-          if (context.duration - context.time < 2000) {
-            console.log('Time left less than 2000 msc')
+          if (context.duration - context.time < 13000) {
+            // console.log('Time left less than 2000 msc')
             const i = context.currentPlayer
             context.currentPlayer = context.nextPlayer
             context.nextPlayer = i
@@ -205,7 +196,7 @@ export default {
         for (const player of context.players) {
           if (player.instance.state === 'started') {
             player.instance.stop()
-            console.log('stop player')
+            // console.log('stop player')
           }
         }
       }

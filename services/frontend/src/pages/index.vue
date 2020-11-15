@@ -50,7 +50,7 @@ export default {
     <live-player
       :id="`stream`"
       class="mb-20"
-      :source="`https://faces2voices.blob.core.windows.net/imagesandspecs/77367c89-0ce5-45c0-96b0-2d048b0842a9.wav`"
+      :source="`https://faces2voices.blob.core.windows.net/imagesandspecs/audio.mp3`"
       :disabled="false"
       :loop="true"
     />
@@ -107,6 +107,7 @@ export default {
         ><u>Nikita Morozov</u></a
       >
     </p>
+    <!--
     <a
       class="mb-20"
       target="_blank"
@@ -114,6 +115,7 @@ export default {
     >
       <svg-icon style="height: 30px; width: 30px" name="github" />
     </a>
+    -->
   </div>
 </template>
 <style lang="scss">
