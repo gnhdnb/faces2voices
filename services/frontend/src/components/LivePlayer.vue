@@ -1,35 +1,40 @@
 <template>
-  <div ref="player" class="player__wrapper">
-    <div
-      class="player__controls"
-      :style="{ cursor: disabled ? 'not-allowed' : 'pointer' }"
-    >
-      <loader v-if="showLoader" :id="`player`" />
-      <svg-icon
-        v-else
-        style="height: 18px; width: 20px"
-        :name="play ? 'pause' : 'play'"
-        @click="start"
-      />
-    </div>
-    <div class="player__slot-wrapper">
+  <div>
+    Duration: {{ duration }} Time: {{ time }} currentPlayer:
+    {{ currentPlayer }}
+    nextPlayer: {{ nextPlayer }}
+    <div ref="player" class="player__wrapper">
       <div
-        style="position: relative; cursor: pointer"
-        v-if="!showLoader"
-        @click="start"
+        class="player__controls"
+        :style="{ cursor: disabled ? 'not-allowed' : 'pointer' }"
       >
-        Live<span id="live"></span>
-      </div>
-    </div>
-    <div class="volume-container">
-      <div class="volume-button" @click="mute">
+        <loader v-if="showLoader" :id="`player`" />
         <svg-icon
+          v-else
           style="height: 18px; width: 20px"
-          :name="muted ? 'muted_speaker' : 'speaker'"
+          :name="play ? 'pause' : 'play'"
+          @click="start"
         />
       </div>
-      <div ref="volumeSlider" class="volume-slider">
-        <div ref="volumePercentage" class="volume-percentage"></div>
+      <div class="player__slot-wrapper">
+        <div
+          style="position: relative; cursor: pointer"
+          v-if="!showLoader"
+          @click="start"
+        >
+          Live<span id="live"></span>
+        </div>
+      </div>
+      <div class="volume-container">
+        <div class="volume-button" @click="mute">
+          <svg-icon
+            style="height: 18px; width: 20px"
+            :name="muted ? 'muted_speaker' : 'speaker'"
+          />
+        </div>
+        <div ref="volumeSlider" class="volume-slider">
+          <div ref="volumePercentage" class="volume-percentage"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -62,6 +67,7 @@ export default {
       currentPlayer: 0,
       nextPlayer: 1,
       time: 0,
+      duration: 0,
     }
   },
   methods: {
@@ -85,26 +91,32 @@ export default {
           0,
           context.time / 1000
         )
-        let duration = Math.round(
+        context.duration = Math.round(
           context.players[context.currentPlayer].instance.buffer.duration * 1000
         )
-        console.log(`duration is ${duration}`)
+        console.log(`duration is ${context.duration}`)
         let startDownload = true
         context.interval = setInterval(() => {
-          context.time += 100
-          if (context.time > duration / 2) {
+          context.time += 1
+          if (context.time > context.duration / 2) {
             if (startDownload) {
               console.log('Time to download')
               context.toneAudioBuffers.add(
                 context.nextPlayer,
                 context.source,
                 () => {
+                  console.log('Success')
                   context.players[
                     context.nextPlayer
                   ].instance.buffer = context.toneAudioBuffers.get(
                     context.nextPlayer
                   )
-                  console.log('Success')
+                  console.log(`Player id ${context.nextPlayer}`)
+                  console.log(
+                    `Buffer: ${context.toneAudioBuffers.get(
+                      context.nextPlayer
+                    )}`
+                  )
                 },
                 (e) => {
                   console.log('Error when adding to buffer')
@@ -114,16 +126,17 @@ export default {
             }
             startDownload = false
           }
-          if (duration - context.time < 13900) {
+          if (context.duration - context.time < 1000) {
             console.log('Prepare to start next player')
+            context.players[context.currentPlayer].instance.stop()
             const i = context.currentPlayer
             context.currentPlayer = context.nextPlayer
             context.nextPlayer = i
-            duration = Math.round(
+            context.duration = Math.round(
               context.players[context.currentPlayer].instance.buffer.duration *
                 1000
             )
-            console.log(`New player duration is ${duration}`)
+            console.log(`New player duration is ${context.duration}`)
             context.time = 0
             startDownload = true
             console.log('Start current player')
@@ -132,7 +145,7 @@ export default {
               `State: ${context.players[context.currentPlayer].instance.state}`
             )
           }
-        }, 100)
+        }, 1)
       }
       context.play = !context.play
     },

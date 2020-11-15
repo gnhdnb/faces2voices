@@ -50,7 +50,7 @@ export default {
     <live-player
       :id="`stream`"
       class="mb-20"
-      :source="`https://faces2voices.blob.core.windows.net/imagesandspecs/audio.mp3`"
+      :source="`https://faces2voices.blob.core.windows.net/imagesandspecs/77367c89-0ce5-45c0-96b0-2d048b0842a9.wav`"
       :disabled="false"
       :loop="true"
     />

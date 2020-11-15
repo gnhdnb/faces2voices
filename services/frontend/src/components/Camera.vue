@@ -127,6 +127,13 @@ export default {
     },
     turnOnCamera() {
       const context = this
+      const top =
+        context.$refs.cameraWrapper.getBoundingClientRect().top + window.scrollY
+      window.scroll({
+        top,
+        left: 0,
+        behavior: 'smooth',
+      })
       return new Promise((resolve, reject) => {
         try {
           context.setLoaderProps({
