@@ -149,6 +149,16 @@ export default {
           context.players.push({ instance: new Tone.Player() })
           context.crossFade.fade.value = 0.5
           context.players[0].instance.mute = context.muted
+          context.players[0].instance.onstop = function () {
+            console.log(`currentPlayer: ${context.currentPlayer}`)
+            console.log(`nextPlayer: ${context.nextPlayer}`)
+            console.log('Player 0 stoped')
+          }
+          context.players[1].instance.onstop = function () {
+            console.log(`currentPlayer: ${context.currentPlayer}`)
+            console.log(`nextPlayer: ${context.nextPlayer}`)
+            console.log('Player 1 stoped')
+          }
           context.players[1].instance.mute = context.muted
           context.players[0].instance.connect(context.crossFade.a)
           context.players[1].instance.connect(context.crossFade.b)
