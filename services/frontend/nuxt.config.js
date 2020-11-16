@@ -16,6 +16,7 @@ export default {
     '@nuxtjs/pwa',
     '@nuxtjs/style-resources',
     '@nuxtjs/svg-sprite',
+    ['nuxt-cname-module', { baseUrl: process.env.ORIGIN_URL }],
   ],
   server: {
     port: 3000,
