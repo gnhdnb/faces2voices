@@ -14,7 +14,6 @@
       "@nuxtjs/pwa": "3.0.2",
       "@nuxtjs/style-resources": "1.0.0",
       "@nuxtjs/svg-sprite": "0.4.12",
-      "nuxt-cname-module": "1.1.1",
       "nuxt": "^2.14.6",
       "face-api.js": "0.22.2",
       "clone-deep": "4.0.1",
