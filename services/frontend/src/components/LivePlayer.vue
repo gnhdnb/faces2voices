@@ -8,7 +8,7 @@
       <svg-icon
         v-else
         style="height: 18px; width: 20px"
-        :name="play ? 'pause' : 'play'"
+        :name="status == 'stoped' ? 'play' : 'pause'"
         @click="start"
       />
     </div>
@@ -53,43 +53,33 @@ export default {
   },
   data() {
     return {
-      play: false,
+      status: 'stoped',
       muted: false,
       showLoader: false,
-      downloading: false,
       first: true,
       crossFade: {},
       players: [],
       currentPlayer: 0,
       nextPlayer: 1,
-      time: 0,
       duration: 0,
+      leftDuration: 0,
       loop: 1,
     }
   },
   methods: {
-    check() {
-      /*
-      const context = this
-      console.log(`First player state: ${context.players[0].instance.state}`)
-      console.log(`Second player state: ${context.players[1].instance.state}`)
-      */
-    },
-    startPlayer() {
-      console.log('Start method')
+    startPlayer(offset, duration) {
       const context = this
       context.players[context.currentPlayer].instance.start(
         0,
-        context.time / 1000,
-        context.duration - context.time / 1000
+        offset / 1000,
+        duration / 1000
       )
     },
     download() {
       const context = this
-      console.log(`Downloading started at time: ${context.time}`)
       context.toneAudioBuffers.add(
         context.nextPlayer,
-        context.source,
+        `${context.source}?t=${new Date().getTime()}`,
         () => {
           console.log('Success')
           context.players[
@@ -102,15 +92,58 @@ export default {
         }
       )
     },
+    play() {
+      const context = this
+      context.startTimestamp = new Date().getTime()
+      context.startSecondPlayerTimeout = setTimeout(
+        function () {
+          console.log('Start second player')
+          const i = context.currentPlayer
+          context.currentPlayer = context.nextPlayer
+          context.nextPlayer = i
+          const duration = Math.floor(
+            context.players[context.currentPlayer].instance.buffer.duration *
+              1000
+          )
+          context.duration = duration
+          context.leftDuration = duration
+          context.play()
+          context.loop += 1
+        },
+        context.leftDuration - 14000 > 0 ? context.leftDuration - 14000 : 0
+      )
+      context.startPlayer(
+        context.duration - context.leftDuration,
+        context.leftDuration
+      )
+      const downloadStartedIn =
+        context.duration - context.leftDuration < 10000
+          ? 10000 - context.duration + context.leftDuration
+          : 0
+      context.downloadTimeout = setTimeout(context.download, downloadStartedIn)
+    },
+    stop() {
+      const context = this
+      clearTimeout(context.downloadTimeout)
+      clearTimeout(context.startSecondPlayerTimeout)
+      context.stopTimestamp = new Date().getTime()
+      context.leftDuration -= context.stopTimestamp - context.startTimestamp
+      for (const player of context.players) {
+        if (player.instance.state === 'started') {
+          player.instance.stop()
+          console.log('Stop player')
+        }
+      }
+    },
     start() {
-      console.log('start event')
+      console.log('Start')
       const context = this
       if (context.disabled) {
         return false
       }
       Tone.context.resume().then(() => {
         if (context.first) {
-          console.log('Create players and buffers')
+          console.log('Init')
           context.crossFade = new Tone.CrossFade().toDestination()
           context.players.push({ instance: new Tone.Player() })
           context.players.push({ instance: new Tone.Player() })
@@ -119,7 +152,6 @@ export default {
           context.players[1].instance.mute = context.muted
           context.players[0].instance.connect(context.crossFade.a)
           context.players[1].instance.connect(context.crossFade.b)
-
           // click volume slider to change volume
           const volumeSlider = this.$refs.volumeSlider
           volumeSlider.addEventListener(
@@ -151,7 +183,18 @@ export default {
               ].instance.buffer = context.toneAudioBuffers.get(
                 context.currentPlayer
               )
+              context.players[
+                context.nextPlayer
+              ].instance.buffer = context.toneAudioBuffers.get(
+                context.currentPlayer
+              )
               context.first = false
+              const duration = Math.floor(
+                context.players[context.currentPlayer].instance.buffer
+                  .duration * 1000
+              )
+              context.duration = duration
+              context.leftDuration = duration
               context.toggle()
             }
           )
@@ -161,45 +204,9 @@ export default {
       })
     },
     toggle() {
-      console.log('toggle event')
       const context = this
-      if (context.play === false) {
-        console.log('Start playing song')
-        // Duration in miliseconds
-        context.duration = Math.floor(
-          context.players[context.currentPlayer].instance.buffer.duration * 1000
-        )
-        context.startPlayer()
-        context.interval = setInterval(() => {
-          context.time += 50
-          if (context.duration - context.time < 13000) {
-            console.log('Time left less than 13000 msc')
-            const i = context.currentPlayer
-            context.currentPlayer = context.nextPlayer
-            context.nextPlayer = i
-            context.duration += 0
-            context.time = 0
-            context.startPlayer()
-            context.loop += 1
-            context.downloading = false
-          }
-          if (context.downloading === false) {
-            if (context.time > context.duration / 2) {
-              context.download()
-              context.downloading = true
-            }
-          }
-        }, 50)
-      } else {
-        clearInterval(context.interval)
-        for (const player of context.players) {
-          if (player.instance.state === 'started') {
-            player.instance.stop()
-            console.log('stop player')
-          }
-        }
-      }
-      context.play = !context.play
+      context.status = context.status === 'stoped' ? 'play' : 'stoped'
+      context.status === 'play' ? context.play() : context.stop()
     },
     mute() {
       const context = this
