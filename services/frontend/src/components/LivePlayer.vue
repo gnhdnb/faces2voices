@@ -64,157 +64,183 @@ export default {
       duration: 0,
       leftDuration: 0,
       loop: 1,
+      downloaded: false,
     }
   },
   methods: {
-    startPlayer(offset, duration) {
+    start() {
+      console.log(`button pressed`)
       const context = this
-      context.players[context.currentPlayer].instance.start(
-        0,
-        offset / 1000,
-        duration / 1000
-      )
-    },
-    download() {
-      const context = this
-      context.toneAudioBuffers.add(
-        context.nextPlayer,
-        `${context.source}?t=${new Date().getTime()}`,
-        () => {
-          console.log('Success')
-          context.players[
-            context.nextPlayer
-          ].instance.buffer = context.toneAudioBuffers.get(context.nextPlayer)
-        },
-        (e) => {
-          console.log('Error when adding to buffer')
+      if (context.disabled) {
+        return false
+      }
+      Tone.context
+        .resume()
+        .then(() => {
+          if (context.first) {
+            context.showLoader = true
+            context.crossFade = new Tone.CrossFade().toDestination()
+            context.toneAudioBuffers = new Tone.ToneAudioBuffers()
+            context.players.push(new Tone.Player())
+            context.players.push(new Tone.Player())
+            context.crossFade.fade.value = 0.5
+            context.players[0].mute = context.muted
+            context.players[1].mute = context.muted
+            context.players[0].onstop = function () {
+              console.log(
+                `${new Date()}Player 0 stoped, current ${
+                  context.currentPlayer
+                }, next: ${context.nextPlayer}`
+              )
+            }
+            context.players[1].onstop = function () {
+              console.log(
+                `${new Date()} Player 1 stoped, current ${
+                  context.currentPlayer
+                }, next: ${context.nextPlayer}`
+              )
+            }
+            context.players[0].connect(context.crossFade.a)
+            context.players[1].connect(context.crossFade.b)
+            context.initVolumeSlider()
+            context
+              .download(`${context.source}?t=${new Date().getTime()}`, 0, 0)
+              .then((buffer) => {
+                context.showLoader = false
+                const duration = Math.floor(
+                  context.players[0].buffer.duration * 1000
+                )
+                context.duration = duration
+                context.leftDuration = duration
+                context.first = false
+                context.toggle()
+              })
+              .catch((error) => {
+                console.log(`${new Date()}. ERROR: ${error.message}`)
+              })
+          } else {
+            context.toggle()
+          }
+        })
+        .catch((e) => {
           console.log(e)
+          console.log('Tone context error')
+        })
+    },
+    download(src, bufferID, playerID) {
+      console.log(`download`)
+      const context = this
+      return new Promise((resolve, reject) => {
+        if (context.toneAudioBuffers.has(bufferID)) {
+          console.log(
+            `${new Date()} Buffer with name ${bufferID} exist, disposing`
+          )
+          context.toneAudioBuffers.get(bufferID).dispose()
         }
-      )
+        console.log(`${new Date()} start download from ${src}`)
+        context.toneAudioBuffers.add(
+          bufferID,
+          src,
+          () => {
+            console.log(
+              `${new Date()} status: success, buf/plr: ${bufferID}/${playerID}`
+            )
+            context.players[playerID].buffer = context.toneAudioBuffers.get(
+              bufferID
+            )
+            return resolve('OK')
+          },
+          (e) => {
+            return reject(e || { message: 'Error when downloading' })
+          }
+        )
+      })
     },
     play() {
+      console.log(`play`)
       const context = this
       context.startTimestamp = new Date().getTime()
-      context.startSecondPlayerTimeout = setTimeout(
-        function () {
-          console.log('Start second player')
-          const i = context.currentPlayer
-          context.currentPlayer = context.nextPlayer
-          context.nextPlayer = i
-          const duration = Math.floor(
-            context.players[context.currentPlayer].instance.buffer.duration *
-              1000
-          )
-          context.duration = duration
-          context.leftDuration = duration
-          context.play()
-          context.loop += 1
-        },
+      console.log(context.leftDuration)
+      console.log(context.duration)
+      const secondPlayerTime =
         context.leftDuration - 14000 > 0 ? context.leftDuration - 14000 : 0
-      )
+      console.log(`${new Date()}.Starting next player in ${secondPlayerTime}`)
+      context.startSecondPlayerTimeout = setTimeout(function () {
+        console.log(`${new Date()}. Start next player`)
+        if (!context.downloaded) {
+          // Берем старый буфер, подставляем его в новый плеер
+          console.log(`${new Date()}. Not downloaded, use old buffer`)
+          context.players[
+            context.nextPlayer
+          ].buffer = context.toneAudioBuffers.get(context.currentPlayer)
+        }
+
+        const i = context.currentPlayer
+        context.currentPlayer = context.nextPlayer
+        context.nextPlayer = i
+        const duration = Math.floor(
+          context.players[context.currentPlayer].buffer.duration * 1000
+        )
+        context.duration = duration
+        context.leftDuration = duration
+        context.downloaded = false
+        context.loop += 1
+        context.play()
+      }, secondPlayerTime)
+
+      const downloadStartedIn =
+        context.duration - context.leftDuration < 20000
+          ? 20000 - context.duration + context.leftDuration
+          : 0
+      console.log(`${new Date()}.Download started in: ${downloadStartedIn}`)
+      context.downloadTimeout = setTimeout(function () {
+        context
+          .download(
+            `${context.source}?t=${new Date().getTime()}`,
+            context.nextPlayer,
+            context.nextPlayer
+          )
+          .then(() => {
+            context.downloaded = true
+          })
+          .catch((e) => {
+            context.downloaded = false
+            console.log(e)
+          })
+      }, downloadStartedIn)
+      console.log(`${new Date()}. Start player ${context.currentPlayer}`)
       context.startPlayer(
+        context.currentPlayer,
         context.duration - context.leftDuration,
         context.leftDuration
       )
-      const downloadStartedIn =
-        context.duration - context.leftDuration < 10000
-          ? 10000 - context.duration + context.leftDuration
-          : 0
-      context.downloadTimeout = setTimeout(context.download, downloadStartedIn)
+    },
+    startPlayer(id, offset, duration) {
+      console.log(`startPlayer event`)
+      const context = this
+      context.players[id].start(0, offset / 1000, duration / 1000)
     },
     stop() {
+      console.log(`stop event`)
       const context = this
       clearTimeout(context.downloadTimeout)
       clearTimeout(context.startSecondPlayerTimeout)
       context.stopTimestamp = new Date().getTime()
       context.leftDuration -= context.stopTimestamp - context.startTimestamp
       for (const player of context.players) {
-        if (player.instance.state === 'started') {
-          player.instance.stop()
-          console.log('Stop player')
+        if (player.state === 'started') {
+          player.stop()
+          console.log('Player stoped by stop event')
         }
       }
-    },
-    start() {
-      console.log('Start')
-      const context = this
-      if (context.disabled) {
-        return false
-      }
-      Tone.context.resume().then(() => {
-        if (context.first) {
-          console.log('Init')
-          context.crossFade = new Tone.CrossFade().toDestination()
-          context.players.push({ instance: new Tone.Player() })
-          context.players.push({ instance: new Tone.Player() })
-          context.crossFade.fade.value = 0.5
-          context.players[0].instance.mute = context.muted
-          context.players[0].instance.onstop = function () {
-            console.log(`currentPlayer: ${context.currentPlayer}`)
-            console.log(`nextPlayer: ${context.nextPlayer}`)
-            console.log('Player 0 stoped')
-          }
-          context.players[1].instance.onstop = function () {
-            console.log(`currentPlayer: ${context.currentPlayer}`)
-            console.log(`nextPlayer: ${context.nextPlayer}`)
-            console.log('Player 1 stoped')
-          }
-          context.players[1].instance.mute = context.muted
-          context.players[0].instance.connect(context.crossFade.a)
-          context.players[1].instance.connect(context.crossFade.b)
-          // click volume slider to change volume
-          const volumeSlider = this.$refs.volumeSlider
-          volumeSlider.addEventListener(
-            'click',
-            (e) => {
-              const sliderWidth = window.getComputedStyle(volumeSlider).width
-              let newVolume = e.offsetX / parseInt(sliderWidth)
-              this.$refs.volumePercentage.style.width = newVolume * 100 + '%'
-              newVolume = (newVolume * 100) / 5 - 10
-              if (newVolume === -10) {
-                return context.mute()
-              }
-              context.players[0].instance.volume.value = newVolume
-              context.players[1].instance.volume.value = newVolume
-              context.muted = false
-              context.players[0].instance.mute = false
-              context.players[1].instance.mute = false
-            },
-            false
-          )
-          context.showLoader = true
-          context.toneAudioBuffers = new Tone.ToneAudioBuffers(
-            [context.source],
-            () => {
-              console.log('Buffer created')
-              context.showLoader = false
-              context.players[
-                context.currentPlayer
-              ].instance.buffer = context.toneAudioBuffers.get(
-                context.currentPlayer
-              )
-              context.players[
-                context.nextPlayer
-              ].instance.buffer = context.toneAudioBuffers.get(
-                context.currentPlayer
-              )
-              context.first = false
-              const duration = Math.floor(
-                context.players[context.currentPlayer].instance.buffer
-                  .duration * 1000
-              )
-              context.duration = duration
-              context.leftDuration = duration
-              context.toggle()
-            }
-          )
-        } else {
-          context.toggle()
-        }
-      })
     },
     toggle() {
       const context = this
+      console.log(
+        `${new Date()} toggle event. cur: ${context.status}, switch to: ${
+          context.status === 'stoped' ? 'play' : 'stoped'
+        }`
+      )
       context.status = context.status === 'stoped' ? 'play' : 'stoped'
       context.status === 'play' ? context.play() : context.stop()
     },
@@ -224,8 +250,30 @@ export default {
         return false
       }
       context.muted = !context.muted
-      context.players[0].instance.mute = !context.players[0].instance.mute
-      context.players[1].instance.mute = !context.players[1].instance.mute
+      context.players[0].mute = !context.players[0].mute
+      context.players[1].mute = !context.players[1].mute
+    },
+    initVolumeSlider() {
+      const context = this
+      const volumeSlider = this.$refs.volumeSlider
+      volumeSlider.addEventListener(
+        'click',
+        (e) => {
+          const sliderWidth = window.getComputedStyle(volumeSlider).width
+          let newVolume = e.offsetX / parseInt(sliderWidth)
+          this.$refs.volumePercentage.style.width = newVolume * 100 + '%'
+          newVolume = (newVolume * 100) / 5 - 10
+          if (newVolume === -10) {
+            return context.mute()
+          }
+          context.players[0].volume.value = newVolume
+          context.players[1].volume.value = newVolume
+          context.muted = false
+          context.players[0].mute = false
+          context.players[1].mute = false
+        },
+        false
+      )
     },
   },
 }
