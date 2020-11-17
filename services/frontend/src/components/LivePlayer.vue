@@ -212,6 +212,11 @@ export default {
           })
       }, downloadStartedIn)
       console.log(`${new Date()}. Start player ${context.currentPlayer}`)
+      console.log(
+        `${new Date()} isLoaded:${
+          context.players[context.currentPlayer].loaded
+        }`
+      )
       context.startPlayer(
         context.currentPlayer,
         context.duration - context.leftDuration,
@@ -222,6 +227,7 @@ export default {
       console.log(`startPlayer event`)
       const context = this
       context.players[id].start(0, offset / 1000, duration / 1000)
+      console.log(`${new Date()} isLoaded:${context.players[id].loaded}`)
     },
     stop() {
       console.log(`stop event`)
