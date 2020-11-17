@@ -74,9 +74,12 @@ export default {
       if (context.disabled) {
         return false
       }
-      Tone.context
+      Tone.context._context
         .resume()
         .then(() => {
+          Tone.context.on('statechange', (args) => {
+            console.log('statechange')
+          })
           if (context.first) {
             context.showLoader = true
             context.crossFade = new Tone.CrossFade().toDestination()
@@ -163,7 +166,7 @@ export default {
       console.log(context.leftDuration)
       console.log(context.duration)
       const secondPlayerTime =
-        context.leftDuration - 14000 > 0 ? context.leftDuration - 14000 : 0
+        context.leftDuration - 30000 > 0 ? context.leftDuration - 30000 : 0
       console.log(`${new Date()}.Starting next player in ${secondPlayerTime}`)
       context.startSecondPlayerTimeout = setTimeout(function () {
         console.log(`${new Date()}. Start next player`)
@@ -189,8 +192,8 @@ export default {
       }, secondPlayerTime)
 
       const downloadStartedIn =
-        context.duration - context.leftDuration < 20000
-          ? 20000 - context.duration + context.leftDuration
+        context.duration - context.leftDuration < 10000
+          ? 10000 - context.duration + context.leftDuration
           : 0
       console.log(`${new Date()}.Download started in: ${downloadStartedIn}`)
       context.downloadTimeout = setTimeout(function () {
