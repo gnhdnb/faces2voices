@@ -13,7 +13,7 @@ export default {
           audio: false,
           video: {
             width: { ideal: 1280 },
-                height: { ideal: 720 },
+            height: { ideal: 720 },
           },
         })
         .then((stream) => {
@@ -47,7 +47,7 @@ export default {
 .camera {
   &__wrapper {
     width: 100%;
-    background: black;
+    background: red;
   }
   &__video {
     width: 100%;
@@ -55,10 +55,10 @@ export default {
     object-fit: contain;
     pointer-events: none;
     &::-webkit-media-controls {
-      display:none !important;
+      display: none !important;
     }
     &::-webkit-media-controls-start-playback-button {
-      display:none;
+      display: none;
     }
   }
 }
