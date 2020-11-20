@@ -35,9 +35,9 @@ export default {
     <video
       ref="video"
       class="camera__video"
-      mute="true"
-      autoplay="true"
-      playsinline="true"
+      mute
+      autoplay
+      playsinline
       @canplay="canplay"
     />
     <span @click="play">PLAY</span>
@@ -55,7 +55,10 @@ export default {
     object-fit: contain;
     pointer-events: none;
     &::-webkit-media-controls {
-       display:none !important;
+      display:none !important;
+    }
+    &::-webkit-media-controls-start-playback-button {
+      display:none;
     }
   }
 }
