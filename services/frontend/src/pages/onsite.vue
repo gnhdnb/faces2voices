@@ -1,5 +1,5 @@
 <script>
-import { v4 as uuidv4, validate as uuidValidate } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 import { mapState, mapMutations, mapGetters } from 'vuex'
 export default {
   data() {
@@ -15,26 +15,30 @@ export default {
       participant: (state) => state.participant,
     }),
   },
-  mounted() {
-    const uuid = this.getValue('uuid')
-    // validation
-    if (uuidValidate(uuid)) {
-      this.uuid = uuid
-    } else {
-      // generate new uuid
-      const newUUID = uuidv4()
-      this.setValue({ id: 'uuid', payload: newUUID })
-      this.uuid = newUUID
-    }
+  watch: {
+    participant(newValue, oldValue) {
+      const context = this
 
-    const participant = this.getValue('participant')
-    // validation
-    if (participant) {
-      this.isParticipant(true)
-    } else {
-      this.isParticipant(false)
-      this.setValue({ id: 'participant', payload: false })
-    }
+      if (newValue) {
+        console.log('timeout is set')
+        setTimeout(function () {
+          const newUUID = uuidv4()
+          context.setValue({ id: 'uuid', payload: newUUID })
+          context.uuid = newUUID
+
+          context.isParticipant(false)
+          context.setValue({ id: 'participant', payload: false })
+        }, 60 * 1000)
+      }
+    },
+  },
+  mounted() {
+    const newUUID = uuidv4()
+    this.setValue({ id: 'uuid', payload: newUUID })
+    this.uuid = newUUID
+
+    this.isParticipant(false)
+    this.setValue({ id: 'participant', payload: false })
   },
   methods: {
     ...mapMutations({
@@ -68,8 +72,18 @@ export default {
       privacy should we give up and how much data do governments really need to
       respond effectively?
     </p>
-    <p class="comeback mt-40 mb-40">
-      Face recognition is off for now. Come back on december 17th!
+    <p class="description mb-20">
+      You can contribute to the project by giving access to the camera of your
+      device. AI will recognise your face, synthesize your imaginary voice and
+      add it to the live stream.
+    </p>
+    <camera v-if="!participant" class="mb-10" />
+    <participant v-else class="mb-10" />
+    <p id="title">Privacy statement</p>
+    <p class="description mb-20">
+      We are implementing a responsible data policy. The project doesn't store
+      or share personal data of participants, but only save and use fictional
+      voice synthesiser metadata.
     </p>
     <p id="authors" class="mb-10">
       Faces2Voices is a project by

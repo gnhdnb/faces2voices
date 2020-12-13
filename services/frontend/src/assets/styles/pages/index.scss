@@ -25,11 +25,20 @@
   line-height: 17px;
   color: black;
   @include adaptiv-font(14, 10);
-  
 }
 #title{
   font-style: italic;
   font-weight: bold;
+  max-width: 609px;
+  width: 100%;
+  font-family:'Verdana-Regular';
+  text-align: center;
+  line-height: 17px;
+  color: black;
+  @include adaptiv-font(14, 10);
+}
+.comeback{
+  font-style: italic;
   max-width: 609px;
   width: 100%;
   font-family:'Verdana-Regular';
