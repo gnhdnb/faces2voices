@@ -28,7 +28,7 @@ export default {
 
           context.isParticipant(false)
           context.setValue({ id: 'participant', payload: false })
-        }, 60 * 1000)
+        }, 45 * 1000)
       }
     },
   },
