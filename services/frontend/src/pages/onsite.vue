@@ -96,7 +96,7 @@ export default {
       >
     </p>
     <p id="inspired" class="mb-10">
-      inspired by
+      we reflected on
       <a
         class="mb-20 links"
         target="_blank"
