@@ -51,25 +51,6 @@ export default {
 <template>
   <div class="page__wrapper">
     <p class="title mt-20 mb-10">Faces2Voices</p>
-    <p class="description mb-10">
-      Faces2Voices is an online interactive installation which uses facial
-      recognition technology and AI-synthesized sound to create a generative
-      music composition based on imaginary voices of online visitors. The
-      composition is evolving in time depending on the contributions of people
-      involved.
-    </p>
-    <p class="description mb-10">
-      Lots of governments use surveillance technology as a way to control the
-      spread of COVID-19. At the same moment many citizens are ready to give up
-      some privacy for the common good. But how can we define what level of
-      privacy should we give up and how much data do governments really need to
-      respond effectively?
-    </p>
-    <p class="description mb-20">
-      You can contribute to the project by giving access to the camera of your
-      device. AI will recognise your face, synthesize your imaginary voice and
-      add it to the live stream.
-    </p>
     <camera v-if="!participant" class="mb-10" />
     <participant-onsite v-else class="mb-10" />
     <p id="title">Privacy statement</p>
