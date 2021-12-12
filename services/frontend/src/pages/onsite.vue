@@ -59,32 +59,6 @@ export default {
       or share personal data of participants, but only save and use fictional
       voice synthesiser metadata.
     </p>
-    <p id="authors" class="mb-10">
-      Faces2Voices is a project by
-      <a class="links" target="_blank" href="http://nikonole.com/">
-        Helena Nikonole</a
-      >
-      and
-      <a class="links" href="https://gnhdnb.github.io" target="_blank"
-        >Nikita Prudnikov</a
-      >
-    </p>
-    <p id="inspired" class="mb-10">
-      we reflected on
-      <a
-        class="mb-20 links"
-        target="_blank"
-        href="https://arxiv.org/pdf/1905.09773.pdf"
-      >
-        Speech2Face
-      </a>
-    </p>
-    <p id="developer" class="mb-10">
-      designed by
-      <a class="links" href="https://reverse-studio.web.app/faces2voices"
-        ><u>Nikita Morozov</u></a
-      >
-    </p>
     <!--
     <a
       class="mb-20"
