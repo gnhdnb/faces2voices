@@ -51,13 +51,6 @@ export default {
 <template>
   <div class="page__wrapper">
     <p class="title mt-20 mb-10">Faces2Voices</p>
-    <live-player
-      :id="`stream`"
-      class="mb-20"
-      :source="`https://faces2voices.blob.core.windows.net/imagesandspecs/audio.mp3`"
-      :disabled="false"
-      :loop="true"
-    />
     <p class="description mb-10">
       Faces2Voices is an online interactive installation which uses facial
       recognition technology and AI-synthesized sound to create a generative
@@ -78,7 +71,7 @@ export default {
       add it to the live stream.
     </p>
     <camera v-if="!participant" class="mb-10" />
-    <participant v-else class="mb-10" />
+    <participant-onsite v-else class="mb-10" />
     <p id="title">Privacy statement</p>
     <p class="description mb-20">
       We are implementing a responsible data policy. The project doesn't store
