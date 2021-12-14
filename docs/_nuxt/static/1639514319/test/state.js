@@ -1,0 +1,1 @@
+window.__NUXT__=(function(a,b){return {staticAssetsBase:"\u002F_nuxt\u002Fstatic\u002F1639514319",layout:"default",error:a,state:{participant:b,loaders:{default:{status:"loading",message:"",hidden:b}}},serverRendered:true,routePath:"\u002Ftest",config:{_app:{basePath:"\u002F",assetsPath:"\u002F_nuxt\u002F",cdnURL:a}}}}(null,false));

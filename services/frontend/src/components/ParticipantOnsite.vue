@@ -33,7 +33,7 @@ export default {
       class="participant__spectrogram mb-10"
       :src="imgURI"
     />
-    <p id="title">Your voice is now live with the rest of the choir.</p>
+    <p id="title">Your voice is now live with the rest of the choir</p>
   </div>
 </template>
 <style lang="scss">
