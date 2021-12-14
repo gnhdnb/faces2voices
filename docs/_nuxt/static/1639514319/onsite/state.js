@@ -1,1 +1,0 @@
-window.__NUXT__=(function(a,b,c,d){return {staticAssetsBase:"\u002F_nuxt\u002Fstatic\u002F1639514319",layout:"default",error:b,state:{participant:c,loaders:{default:{status:a,message:"",hidden:c},camera:{status:a,message:a,hidden:d}}},serverRendered:d,routePath:"\u002Fonsite",config:{_app:{basePath:"\u002F",assetsPath:"\u002F_nuxt\u002F",cdnURL:b}}}}("loading",null,false,true));
