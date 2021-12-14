@@ -28,7 +28,7 @@ export default {
 
           context.isParticipant(false)
           context.setValue({ id: 'participant', payload: false })
-        }, 45 * 1000)
+        }, 15 * 1000)
       }
     },
   },
@@ -52,13 +52,13 @@ export default {
   <div class="page__wrapper">
     <p class="title mt-20 mb-10">Faces2Voices</p>
     <camera v-if="!participant" class="mb-10" />
-    <participant-onsite v-else class="mb-10" />
-    <p id="title">Privacy statement</p>
-    <p class="description mb-20">
+    <p v-if="!participant" id="title">Privacy statement</p>
+    <p v-if="!participant" class="description mb-20">
       We are implementing a responsible data policy. The project doesn't store
       or share personal data of participants, but only save and use fictional
       voice synthesiser metadata.
     </p>
+    <participant-onsite v-else class="mb-10" />
     <!--
     <a
       class="mb-20"
